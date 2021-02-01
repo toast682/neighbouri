@@ -1,21 +1,21 @@
 import * as React from 'react';
 import { SafeAreaView, Text, View, FlatList } from 'react-native';
 import HistoryButton from '../components/HistoryButton';
+import BackButton from '../components/navigation/BackButton';
 import Header from '../components/navigation/Header';
-import SettingButton from '../components/SettingButton';
 
-export default function ProfileScreen({ navigation }) {
+export default function HistoryScreen({ navigation }) {
     return (
       <SafeAreaView style={{ flex: 1, alignItems: 'center', backgroundColor: 'white'}}>
         {Header(
-            SettingButton(), 
+            BackButton(navigation), 
             <Text style={{flex: 5, alignSelf: 'center', textAlign: 'center', fontWeight: 'bold'}}>@Username</Text>, 
-            HistoryButton(navigation)
+            <View style={{ flex: 1 }}></View>
         )}
-        <Text>My Profile!</Text>
+        <Text>History!</Text>
 
         <FlatList 
-          data={['Banana', 'Pizza', 'Apples']}
+          data={['Old Banana', 'Old Pizza', 'Old Apples']}
           renderItem={({ item }) => 
             (
               <View>
