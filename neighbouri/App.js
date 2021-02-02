@@ -3,7 +3,6 @@ import { Text, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import ProfileScreen from './src/screens/Profile';
-import SignUpScreen from './src/screens/SignUp';
 
 function HomeScreen() {
   return (
