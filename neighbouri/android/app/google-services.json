@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "219021078815",
+    "project_id": "neighbouri",
+    "storage_bucket": "neighbouri.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:219021078815:android:511ec16c02f94a9742802a",
+        "android_client_info": {
+          "package_name": "com.neighbouri"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "219021078815-simqpn76an4rblmi1j8lcm3nssi990j5.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.neighbouri",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "219021078815-lit8de19aokoagliugjsgda3h4vblavq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAU6kU2j-1zipSg_biuGwdJXKJJfpTg5f4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "219021078815-lit8de19aokoagliugjsgda3h4vblavq.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
