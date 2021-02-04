@@ -1,15 +1,20 @@
+
 import 'react-native-gesture-handler';
-import * as React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Text, View } from 'react-native';
 import { enableScreens } from 'react-native-screens';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import auth from '@react-native-firebase/auth';
+
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import ProfileScreen from './src/screens/Profile';
 import HistoryScreen from './src/screens/History';
-
+import LoginScreen from './src/screens/LogIn';
+import SignUpScreen from './src/screens/SignUp';
 
 enableScreens();
+
 
 function HomeScreen() {
   return (
@@ -46,13 +51,38 @@ function Profile() {
 const Tab = createBottomTabNavigator();
 
 export default function App() {
+  // Set an initializing state whilst Firebase connects
+  const [initializing, setInitializing] = useState(true);
+  const [user, setUser] = useState();
+
+  // Handle user state changes
+  function onAuthStateChanged(user) {
+    setUser(user);
+    if (initializing) setInitializing(false);
+  }
+
+  useEffect(() => {
+    const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
+    return subscriber; // unsubscribe on unmount
+  }, []);
+
+  if (initializing) return null;
+
+  if (!user) {
+    return (
+      <SignUpScreen/>
+    );
+  }
+
   return (
     <NavigationContainer>
       <Tab.Navigator>
+        <Tab.Screen name="Login" component={LoginScreen} />
         <Tab.Screen name="Home" component={HomeScreen} />
         <Tab.Screen name="Settings" component={SettingsScreen} />
         <Tab.Screen name="Profile" component={Profile} />
       </Tab.Navigator>
+
     </NavigationContainer>
   );
 }
