@@ -12,6 +12,7 @@ import ProfileScreen from './src/screens/Profile';
 import HistoryScreen from './src/screens/History';
 import LoginScreen from './src/screens/LogIn';
 import SignUpScreen from './src/screens/SignUp';
+import ProfileInfoScreen from './src/screens/ProfileInfo';
 
 enableScreens();
 
@@ -44,6 +45,7 @@ function Profile() {
     >
       <ProfileStack.Screen name="Profile" component={ProfileScreen} />
       <ProfileStack.Screen name="History" component={HistoryScreen} />
+      <ProfileStack.Screen name="ProfileInfo" component={ProfileInfoScreen} />
     </ProfileStack.Navigator>
   )
 }
@@ -68,11 +70,11 @@ export default function App() {
 
   if (initializing) return null;
 
-  if (!user) {
-    return (
-      <SignUpScreen/>
-    );
-  }
+  // if (!user) {
+  //   return (
+  //     <SignUpScreen/>
+  //   );
+  // }
 
   return (
     <NavigationContainer>
