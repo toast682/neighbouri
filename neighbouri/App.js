@@ -1,8 +1,10 @@
-import * as React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Text, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import ProfileScreen from './src/screens/Profile';
+import SignUpScreen from './src/screens/SignUp';
+import auth from '@react-native-firebase/auth';
 
 function HomeScreen() {
   return (
@@ -23,6 +25,29 @@ function SettingsScreen() {
 const Tab = createBottomTabNavigator();
 
 export default function App() {
+  // Set an initializing state whilst Firebase connects
+  const [initializing, setInitializing] = useState(true);
+  const [user, setUser] = useState();
+
+  // Handle user state changes
+  function onAuthStateChanged(user) {
+    setUser(user);
+    if (initializing) setInitializing(false);
+  }
+
+  useEffect(() => {
+    const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
+    return subscriber; // unsubscribe on unmount
+  }, []);
+
+  if (initializing) return null;
+
+  if (!user) {
+    return (
+      <SignUpScreen/>
+    );
+  }
+
   return (
     <NavigationContainer>
       <Tab.Navigator>
