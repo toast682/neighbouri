@@ -2,7 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { Text, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+
 import ProfileScreen from './src/screens/Profile';
+import LoginScreen from './src/screens/LogIn';
 import SignUpScreen from './src/screens/SignUp';
 import auth from '@react-native-firebase/auth';
 
@@ -51,10 +53,12 @@ export default function App() {
   return (
     <NavigationContainer>
       <Tab.Navigator>
+      <Tab.Screen name="Login" component={LoginScreen} />
         <Tab.Screen name="Home" component={HomeScreen} />
         <Tab.Screen name="Settings" component={SettingsScreen} />
         <Tab.Screen name="Profile" component={ProfileScreen} />
       </Tab.Navigator>
+
     </NavigationContainer>
   );
 }
