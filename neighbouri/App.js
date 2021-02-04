@@ -1,12 +1,20 @@
+
+import 'react-native-gesture-handler';
 import React, { useState, useEffect } from 'react';
 import { Text, View } from 'react-native';
+import { enableScreens } from 'react-native-screens';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import auth from '@react-native-firebase/auth';
 
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import ProfileScreen from './src/screens/Profile';
+import HistoryScreen from './src/screens/History';
 import LoginScreen from './src/screens/LogIn';
 import SignUpScreen from './src/screens/SignUp';
-import auth from '@react-native-firebase/auth';
+
+enableScreens();
+
 
 function HomeScreen() {
   return (
@@ -22,6 +30,22 @@ function SettingsScreen() {
       <Text>Settings!</Text>
     </View>
   );
+}
+
+
+const ProfileStack = createNativeStackNavigator();
+function Profile() {
+  return (
+    <ProfileStack.Navigator
+    initialRouteName="Profile"
+    screenOptions={{
+      headerShown: false,
+    }}
+    >
+      <ProfileStack.Screen name="Profile" component={ProfileScreen} />
+      <ProfileStack.Screen name="History" component={HistoryScreen} />
+    </ProfileStack.Navigator>
+  )
 }
 
 const Tab = createBottomTabNavigator();
@@ -56,7 +80,7 @@ export default function App() {
         <Tab.Screen name="Login" component={LoginScreen} />
         <Tab.Screen name="Home" component={HomeScreen} />
         <Tab.Screen name="Settings" component={SettingsScreen} />
-        <Tab.Screen name="Profile" component={ProfileScreen} />
+        <Tab.Screen name="Profile" component={Profile} />
       </Tab.Navigator>
 
     </NavigationContainer>
