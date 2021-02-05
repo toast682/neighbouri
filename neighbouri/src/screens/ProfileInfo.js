@@ -5,6 +5,8 @@ import BackButton from '../components/navigation/BackButton';
 import Header from '../components/navigation/Header';
 import ChangeUsernameButton from '../components/ChangeUsernameButton';
 
+
+
 export default function ProfileInfoScreen({ navigation }) {
   return (
     <SafeAreaView style={{ flex: 1, alignItems: 'center', backgroundColor: 'white' }}>
@@ -14,4 +16,6 @@ export default function ProfileInfoScreen({ navigation }) {
         </Text>
     </SafeAreaView>
   );
+  
 }
+
