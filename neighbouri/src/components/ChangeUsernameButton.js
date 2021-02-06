@@ -8,6 +8,7 @@ export default function ChangeUsernameButton() {
     // const [username, setUsername] = useState('');
     function setUsername(username) {
         console.log(username);
+        //use this with firebase.
     }
 
     function handleSubmitChanges() {
