@@ -8,7 +8,7 @@ export default function ProfileIconButton() {
         <TouchableOpacity onPress={() => {
           console.log('change profile pic');
         }}>
-          <Image source={require('../assets/profile-icon.png')} style={globalStyles.standardIcon}/>
+          <Image source={require('../assets/default-avatar.jpg')} style={globalStyles.standardIcon}/>
         </TouchableOpacity>
       </View>
     );

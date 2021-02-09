@@ -16,7 +16,6 @@ export default function ChangeUsernameButton() {
     }
     return (
         <View >
-        <ProfileIconButton />
             <Text  > Change Username</Text>
             <TextInput
                 placeholder="current username"
