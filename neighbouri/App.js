@@ -12,17 +12,18 @@ import ProfileScreen from './src/screens/Profile';
 import HistoryScreen from './src/screens/History';
 import LoginScreen from './src/screens/LogIn';
 import SignUpScreen from './src/screens/SignUp';
+import HomeScreen from './src/screens/Home';
 
 enableScreens();
 
 
-function HomeScreen() {
+/*function HomeScreen() {
   return (
     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
       <Text>Home!</Text>
     </View>
   );
-}
+}*/
 
 function SettingsScreen() {
   return (
