@@ -3,9 +3,10 @@ import { SafeAreaView, Text, View, FlatList } from 'react-native';
 import HistoryButton from '../components/HistoryButton';
 import BackButton from '../components/navigation/BackButton';
 import Header from '../components/navigation/Header';
-import ChangeUsernameButton from '../components/ChangeUsernameButton';
+import ChangeUsernameForm from '../components/ChangeUsernameForm';
 import UploadImageButton from '../components/UploadImageButton';
-
+import {Button} from 'react-native';
+import SubmitButton from '../components/SubmitButton';
 
 
 export default function ProfileInfoScreen({ navigation }) {
@@ -13,11 +14,11 @@ export default function ProfileInfoScreen({ navigation }) {
     <SafeAreaView style={{ flex: 1, alignItems: 'center', backgroundColor: 'white' }}>
      {Header(
             BackButton(navigation), 
-            <Text style={{flex: 5, alignSelf: 'center', textAlign: 'center', fontWeight: 'bold'}}>@Username</Text>, 
-            <View style={{ flex: 1 }}></View>
+            <Text style={{flex: 5, alignSelf: 'center', textAlign: 'center', fontWeight: 'bold'}}>Edit Profile</Text>, 
+            SubmitButton(navigation)
         )}
     <UploadImageButton/>
-      <ChangeUsernameButton />
+      <ChangeUsernameForm />
     </SafeAreaView>
   );
   

@@ -4,24 +4,23 @@ import { useState } from 'react';
 import auth from '@react-native-firebase/auth';
 import ProfileIconButton from './ProfileIconButton';
 
-export default function ChangeUsernameButton() {
+
+export default function ChangeUsernameForm() {
     // const [username, setUsername] = useState('');
     function setUsername(username) {
         console.log(username);
         //use this with firebase.
     }
 
-    function handleSubmitChanges() {
-        console.log('hello');
-    }
     return (
         <View >
-            <Text  > Change Username</Text>
+            <Text > Change Username</Text>
             <TextInput
                 placeholder="current username"
                 placeholderTextColor = "#000000"
-                style={styles.input}
                 underlineColorAndroid = "transparent"
+                style={styles.input}
+
                 onChangeText={(username) => setUsername(username)}
             />
             <Text > Change Bio </Text>
@@ -30,9 +29,9 @@ export default function ChangeUsernameButton() {
                 placeholderTextColor = "#000000"
                 underlineColorAndroid = "transparent"
                 style={styles.input}
+
                 onChangeText={(username) => setUsername(username)}
             />
-            <Button title="Submit Changes" onPress={() => handleSubmitChanges()} />
 
         </View>
 
@@ -48,7 +47,8 @@ const styles = StyleSheet.create({
        margin: 10,
        height: 40,
        borderColor: '#000000',
-       borderWidth: 1
+       borderWidth: 1,
+       width: 200,
     }
 
  })

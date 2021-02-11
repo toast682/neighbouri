@@ -8,11 +8,12 @@ export default function UploadImageButton() {
     const [image, setImage] = useState({});
     return (
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+        <Button title="Choose photo " onPress={handleChoosePhoto}>
+            </Button>
             {image.uri ? (<Image source={{ uri: image.uri }} style={{ width: 300, height: 300, borderRadius: 150 }} />) :
                 <Image source={defaultProfilePhoto} style={{ width: 300, height: 300, borderRadius: 150 }} />
             }
-            <Button title="Choose photo " onPress={handleChoosePhoto}>
-            </Button>
+            
         </View>
     )
     function handleChoosePhoto() {
