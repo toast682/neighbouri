@@ -5,13 +5,14 @@ import Header from '../components/navigation/Header';
 import SettingButton from '../components/SettingButton';
 import GeoButton from '../component/GeoButton';
 import auth from '@react-native-firebase/auth';
+import ProfileIconButton from '../components/ProfileIconButton';
 
 
 export default function ProfileScreen({ navigation }) {
     return (
       <SafeAreaView style={{ flex: 1, alignItems: 'center', backgroundColor: 'white'}}>
         {Header(
-            SettingButton(), 
+            SettingButton(navigation), 
             <Text style={{flex: 5, alignSelf: 'center', textAlign: 'center', fontWeight: 'bold'}}>@Username</Text>, 
             HistoryButton(navigation)
         )}
