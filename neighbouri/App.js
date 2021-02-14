@@ -81,7 +81,7 @@ export default function App() {
     <NavigationContainer>
       <Tab.Navigator>
         <Tab.Screen name="Login" component={LoginScreen} />
-        <Tab.Screen name="Post" component={HomeScreen} />
+        <Tab.Screen name="Home" component={HomeScreen} />
         <Tab.Screen name="Settings" component={SettingsScreen} />
         <Tab.Screen name="Profile" component={Profile} />
       </Tab.Navigator>
