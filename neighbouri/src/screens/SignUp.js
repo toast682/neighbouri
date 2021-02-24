@@ -1,7 +1,7 @@
 import * as React from 'react';
-import { Button, Text, TextInput, StyleSheet, View } from 'react-native';
+import { Button, Text, TextInput, TouchableOpacity, StyleSheet, View } from 'react-native';
 import auth from '@react-native-firebase/auth';
-import { Link } from '@react-navigation/native';
+import firestore from '@react-native-firebase/firestore';
 
 const styles = StyleSheet.create({
     titleText: {
@@ -16,11 +16,14 @@ const styles = StyleSheet.create({
         color: "dodgerblue",
         marginBottom: 15
     },
-    goToLoginText: {
+    linkButton: {
+        alignItems: "center",
+        marginTop: 30,
+        height: 50
+    },
+    linkButtonText: {
         fontSize: 15,
-        textAlign: "center",
-        color: "dodgerblue",
-        marginTop: 50
+        color: "dodgerblue"
     },
     formContainer: {
         flex: 1,
@@ -41,20 +44,44 @@ const styles = StyleSheet.create({
     }
   });
 
-async function signUp(email, password, setErrorMessage, setTriedSignUp) {
-    console.log(email);
-    console.log(password)
-    setTriedSignUp(true);
-    if (!email || !password) { // add validation
-        setErrorMessage('Please fill both email and password');
+const usersCollection = firestore().collection('Users');
+
+async function signUp(username, email, postalCode, password, setErrorMessage) {
+    if (!username) {
+        setErrorMessage('Please enter a username');
+        return;
+    } else if(!email) {
+        setErrorMessage('Please enter your email');
+        return;
+    } else if (!password) {
+        setErrorMessage('Please enter your password');
+        return;
+    } else if (password.length < 6) {
+        setErrorMessage('The given password is invalid. Password should be at least 6 characters.');
         return;
     }
+
     await auth().createUserWithEmailAndPassword(email, password)
-        .then(() => {
+        .then((userCredential) => {
             console.log('User account created & signed in!');
+            userCredential.user.updateProfile({
+                displayName: username
+            }).then(() => {
+                console.log("Added display name to user");
+                usersCollection.add({
+                    uid: userCredential.user.uid,
+                    postalCode: postalCode,
+                  })
+                  .then(() => {
+                    console.log('User to cloud storage');
+                  }).catch(e => {
+                    console.log("There was an error user to cloud storage: ", e);
+                  });
+            }).catch(error => {
+                console.log("There was an error adding username to user: ", error);
+            });
         })
         .catch(error => {
-            console.log('caught an error');
             if (error.code === 'auth/email-already-in-use') {
                 console.log('That email address is already in use!');
                 setErrorMessage('That email address is already in use');
@@ -67,16 +94,17 @@ async function signUp(email, password, setErrorMessage, setTriedSignUp) {
                 return;
             }
 
-            console.error(error);
-            setErrorMessage(error);
+            console.error('Caught an error: ', error);
+            setErrorMessage("An error occurred while signing up. Please refresh and try again.");
         });
 }
 
-export default function SignUpScreen() {
+export default function SignUpScreen({ navigation }) {
     const [email, setEmail] = React.useState('');
+    const [username, setUsername] = React.useState('');
+    const [postalCode, setPostalCode] = React.useState('');
     const [password, setPassword] = React.useState('');
     const [errorMessage, setErrorMessage] = React.useState('');
-    const [triedSignUp, setTriedSignUp] = React.useState(false);
 
     return (
         <View style={styles.formContainer}>
@@ -84,9 +112,19 @@ export default function SignUpScreen() {
                 <Text style={styles.titleText}>Sign Up</Text>
                 <Text style={styles.subTitleText}>to Neighbouri</Text>
                 <TextInput
+                    placeholder="Username"
+                    value={username}
+                    onChangeText={setUsername}
+                />
+                <TextInput
                     placeholder="Email"
                     value={email}
                     onChangeText={setEmail}
+                />
+                <TextInput
+                    placeholder="Postal Code (Optional)"
+                    value={postalCode}
+                    onChangeText={setPostalCode}
                 />
                 <TextInput
                     placeholder="Password"
@@ -96,7 +134,7 @@ export default function SignUpScreen() {
                 />
                 <View style={styles.signUpButton} >
                     <Button title="Sign up" onPress={() => {
-                                    signUp(email, password, setErrorMessage, setTriedSignUp)
+                                    signUp(username, email, postalCode, password, setErrorMessage)
                                     .then(() => {
                                         // do nothing
                                     }).catch((error) => {
@@ -106,10 +144,16 @@ export default function SignUpScreen() {
                         }/>
                 </View>
                 <View>
-                    {triedSignUp && !!errorMessage &&
+                    {!!errorMessage &&
                     <Text style={styles.validationError}>{errorMessage}</Text>}
                 </View>
-                <Link to="/" style={styles.goToLoginText}>Already have an account? Log In</Link>
+                <TouchableOpacity
+                    title=""
+                    style={styles.linkButton}
+                    onPress={() => navigation.navigate('LogIn')}
+                >
+                    <Text style={styles.linkButtonText}>Already have an account? Log In</Text>
+                </TouchableOpacity>
             </View>
         </View>
     );
