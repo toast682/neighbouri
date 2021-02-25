@@ -12,13 +12,25 @@ import {
 import firestore from '@react-native-firebase/firestore';
 import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 import {TextInput} from 'react-native-gesture-handler';
+import NumericInput from 'react-native-numeric-input'
+
+
+
+const listingsCollection = firestore().collection('Listings');
 
 export default function HomeScreen({navigation}) {
   const [show, setShow] = useState(false);
-  const [photo, setPhoto] = useState(null);
   const [search, setSearch] = useState('');
   const [fullListing, setFullListings] = useState([]);
   const [listings, setListings] = useState([]);
+  const [description, setDescription] = useState('');
+  const [photoURI, setPhotoURI] = useState('');
+  const [itemName, setItemName] = useState('');
+  const [quantity, setQuantity] = useState(0);
+  const [price, setPrice] = useState(0);
+
+
+
 
   useEffect(() => {
     getData();
@@ -45,6 +57,7 @@ export default function HomeScreen({navigation}) {
     };
     launchImageLibrary(options, (response) => {
       console.log('response', response);
+      
     });
   };
 
@@ -54,8 +67,23 @@ export default function HomeScreen({navigation}) {
     };
     launchCamera(options, (response) => {
       console.log('response', response);
+      setPhotoURI(response.uri);
     });
   };
+
+  submitPosting = () => {
+    try {
+      listingsCollection.add({
+        ImageURI: photoURI,
+        Item: itemName,
+        Description: description,
+        Price: price,
+        Quantity: quantity,
+      })
+    } catch (err) {
+      console.log(err);
+    }
+  }
 
   searchList = (keyword) => {
     setSearch(keyword);
@@ -112,6 +140,7 @@ export default function HomeScreen({navigation}) {
           setShow(true);
         }}
       />
+     
 
       <Modal transparent={true} visible={show}>
         <View style={styles.modalOuterContainer}>
@@ -121,8 +150,31 @@ export default function HomeScreen({navigation}) {
             <Button
               style={styles.button}
               title="Add a picture"
-              onPress={this.takePhoto}
+              onPress={takePhoto}
             />
+            <Text > Description </Text>
+            <TextInput
+                underlineColorAndroid = "transparent"
+                style={styles.input}
+                onChangeText={(description) => setDescription(description)}
+            />
+             <Text > Item Name </Text>
+            <TextInput
+                underlineColorAndroid = "transparent"
+                style={styles.input}
+                onChangeText={(itemName) => setItemName(itemName)}
+            />
+              <Text > Price </Text>
+              <NumericInput type='up-down' onChange={value => setPrice(value)} />
+
+              <Text > Quantity </Text>
+            <NumericInput type='up-down' onChange={value => setQuantity(value)} />
+
+              <Button
+              style={styles.button}
+              title="Submit"
+              onPress={submitPosting}
+            />  
 
             <TouchableOpacity
               style={styles.button}
@@ -171,4 +223,11 @@ const styles = StyleSheet.create({
     color: '#3dafe0',
     margin: 50,
   },
+  input: {
+    margin: 10,
+    height: 40,
+    borderColor: '#000000',
+    borderWidth: 1,
+    width: 200,
+ }
 });
