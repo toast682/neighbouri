@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { SafeAreaView, Text, View, FlatList } from 'react-native';
+import auth from '@react-native-firebase/auth';
 import HistoryButton from '../components/HistoryButton';
 import BackButton from '../components/navigation/BackButton';
 import Header from '../components/navigation/Header';
@@ -17,6 +18,12 @@ export default function ProfileInfoScreen({ navigation }) {
             <Text style={{flex: 5, alignSelf: 'center', textAlign: 'center', fontWeight: 'bold'}}>Edit Profile</Text>, 
             SubmitButton(navigation)
         )}
+        <Button
+        onPress={() => {
+          auth().signOut();
+        }}
+        title="Logout"
+      />
     <UploadImageButton/>
       <ChangeUsernameForm />
     </SafeAreaView>

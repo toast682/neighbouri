@@ -115,22 +115,26 @@ export default function SignUpScreen({ navigation }) {
                     placeholder="Username"
                     value={username}
                     onChangeText={setUsername}
+                    placeholderTextColor="grey"
                 />
                 <TextInput
                     placeholder="Email"
                     value={email}
                     onChangeText={setEmail}
+                    placeholderTextColor="grey"
                 />
                 <TextInput
                     placeholder="Postal Code (Optional)"
                     value={postalCode}
                     onChangeText={setPostalCode}
+                    placeholderTextColor="grey"
                 />
                 <TextInput
                     placeholder="Password"
                     value={password}
                     onChangeText={setPassword}
                     secureTextEntry
+                    placeholderTextColor="grey"
                 />
                 <View style={styles.signUpButton} >
                     <Button title="Sign up" onPress={() => {
