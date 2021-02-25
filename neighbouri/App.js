@@ -51,6 +51,8 @@ function Profile() {
   )
 }
 
+const SignUpLoginStack = createNativeStackNavigator();
+
 const Tab = createBottomTabNavigator();
 
 export default function App() {
@@ -71,16 +73,20 @@ export default function App() {
 
   if (initializing) return null;
 
-  // if (!user) {
-  //   return (
-  //     <SignUpScreen/>
-  //   );
-  // }
+  if (!user) {
+    return (
+      <NavigationContainer>
+        <SignUpLoginStack.Navigator initialRouteName="SignUpScreen" screenOptions={{headerShown: false}}>
+          <SignUpLoginStack.Screen name="SignUp" component={SignUpScreen} />
+          <SignUpLoginStack.Screen name="LogIn" component={LoginScreen} />
+        </SignUpLoginStack.Navigator>
+      </NavigationContainer>
+    );
+  }
 
   return (
     <NavigationContainer>
       <Tab.Navigator>
-        <Tab.Screen name="Login" component={LoginScreen} />
         <Tab.Screen name="Home" component={HomeScreen} />
         <Tab.Screen name="Settings" component={SettingsScreen} />
         <Tab.Screen name="Profile" component={Profile} />

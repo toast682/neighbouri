@@ -1,8 +1,7 @@
 import * as React from 'react';
 import { useState } from 'react';
-import { Text, View, TextInput, StyleSheet, Button } from 'react-native';
+import { Text, View, TextInput, TouchableOpacity, StyleSheet, Button } from 'react-native';
 import auth from '@react-native-firebase/auth';
-import { Link } from '@react-navigation/native';
 
 async function logIn(email, password, setErrorMessage) {
     if(!email) {
@@ -23,7 +22,7 @@ async function logIn(email, password, setErrorMessage) {
     });
 }
 
-export default function LoginScreen() {
+export default function LoginScreen({ navigation }) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
@@ -60,9 +59,13 @@ export default function LoginScreen() {
             <Text style={styles.errorMessage}>{errorMessage}</Text>
         </View>
 
-        <Link to="/" style={styles.createAccountLink}>
-            New? Create an account
-        </Link>
+        <TouchableOpacity
+            title=""
+            style={styles.createAccountLink}
+            onPress={() => navigation.navigate('SignUp')}
+        >
+            <Text style={styles.createAccountLinkText}>New? Create an account</Text>
+        </TouchableOpacity>
     </View>
     );
  }
@@ -97,8 +100,13 @@ export default function LoginScreen() {
   },
 
   createAccountLink: {
-    color: "#3dafe0",
     fontSize: 15,
     marginTop: 30,
+  },
+
+  createAccountLinkText: {
+    color: "#3dafe0",
+    fontSize: 15,
+    height: 50
   }
  });
