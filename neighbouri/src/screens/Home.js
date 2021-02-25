@@ -10,8 +10,10 @@ import {
   Image,
 } from 'react-native';
 import firestore from '@react-native-firebase/firestore';
-import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
+import {launchCamera} from 'react-native-image-picker';
+import ImagePicker from 'react-native-image-picker';
 import {TextInput} from 'react-native-gesture-handler';
+import storage from '@react-native-firebase/storage';
 import NumericInput from 'react-native-numeric-input'
 
 
@@ -20,6 +22,8 @@ const listingsCollection = firestore().collection('Listings');
 
 export default function HomeScreen({navigation}) {
   const [show, setShow] = useState(false);
+  const [photo, setPhoto] = useState(null);
+  const [image, setImage] = useState('');
   const [search, setSearch] = useState('');
   const [fullListing, setFullListings] = useState([]);
   const [listings, setListings] = useState([]);
@@ -28,8 +32,6 @@ export default function HomeScreen({navigation}) {
   const [itemName, setItemName] = useState('');
   const [quantity, setQuantity] = useState(0);
   const [price, setPrice] = useState(0);
-
-
 
 
   useEffect(() => {
@@ -51,24 +53,37 @@ export default function HomeScreen({navigation}) {
       });
   }
 
-  choosePhoto = () => {
-    const options = {
-      noData: true,
-    };
-    launchImageLibrary(options, (response) => {
-      console.log('response', response);
-      
-    });
-  };
+   const takePhoto = () => {
+      const options = {
+        noData: true,
+      };
+      launchCamera(options, (response) => {
+        console.log('response', response);
 
-  takePhoto = () => {
-    const options = {
-      noData: true,
+      if (response.didCancel) {
+        console.log('User cancelled image picker');
+      } else if (response.error) {
+        console.log('ImagePicker Error: ', response.error);
+      } else {
+        const source = { uri: response.uri };
+        console.log(source);
+        setPhoto(source);
+      }
+      });
     };
-    launchCamera(options, (response) => {
-      console.log('response', response);
-      setPhotoURI(response.uri);
-    });
+  
+  const uploadImage = async () => {
+    const { uri } = photo;
+    const filename = uri.substring(uri.lastIndexOf('/') + 1);
+    const task = storage()
+      .ref(filename)
+      .putFile(uri);
+    try {
+      await task;
+    } catch (e) {
+      console.error(e);
+    }
+    setPhoto(null);
   };
 
   submitPosting = () => {
@@ -149,7 +164,7 @@ export default function HomeScreen({navigation}) {
 
             <Button
               style={styles.button}
-              title="Add a picture"
+              title="Take a picture"
               onPress={takePhoto}
             />
             <Text > Description </Text>
@@ -183,6 +198,12 @@ export default function HomeScreen({navigation}) {
               }}>
               <Text>{'Close'}</Text>
             </TouchableOpacity>
+
+            <Button
+              style={styles.button}
+              title="Upload"
+              onPress={uploadImage}
+            />
           </View>
         </View>
       </Modal>
