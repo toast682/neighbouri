@@ -1,7 +1,7 @@
 
 import 'react-native-gesture-handler';
 import React, { useState, useEffect } from 'react';
-import { Text, View } from 'react-native';
+import { Text, View, Platform, Image } from 'react-native';
 import { enableScreens } from 'react-native-screens';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -87,9 +87,56 @@ export default function App() {
   return (
     <NavigationContainer>
       <Tab.Navigator>
-        <Tab.Screen name="Home" component={HomeScreen} />
-        <Tab.Screen name="Settings" component={SettingsScreen} />
-        <Tab.Screen name="Profile" component={Profile} />
+        <Tab.Screen 
+          name="Home" 
+          component={HomeScreen}
+          options={{
+            tabBarIcon: () => (
+              <Image
+                source={require('./src/assets/Setting.png')}
+                style={{
+                  tintColor: "#ff0116",
+                  width: '60%',
+                  height: '60%',
+                  resizeMode: 'contain',
+                }}
+              />
+            ),
+          }} />
+        <Tab.Screen 
+          name="Settings" 
+          component={SettingsScreen}
+          options={{
+            tabBarLabel: '',
+            tabBarIcon: () => (
+              <Image
+                source={require('./src/assets/Setting.png')}
+                style={{
+                  tintColor: "#ff0116",
+                  width: Platform.OS === 'ios' ? 70 : 60,
+                  height: Platform.OS === 'ios' ? 70 : 60,
+                  resizeMode: 'contain',
+                  marginTop: Platform.OS === 'ios' ? 0 : -5,
+                }}
+              />
+            ),
+          }} />
+        <Tab.Screen 
+          name="Profile" 
+          component={Profile}
+          options={{
+            tabBarIcon: () => (
+              <Image
+                source={require('./src/assets/Setting.png')}
+                style={{
+                  tintColor: "#ff0116",
+                  width: '60%',
+                  height: '60%',
+                  resizeMode: 'contain',
+                }}
+              />
+            ),
+          }} />
       </Tab.Navigator>
 
     </NavigationContainer>
