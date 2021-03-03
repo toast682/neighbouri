@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { Text, View, Platform, Image } from 'react-native';
 import { enableScreens } from 'react-native-screens';
 import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import auth from '@react-native-firebase/auth';
 
@@ -14,17 +15,21 @@ import LoginScreen from './src/screens/LogIn';
 import SignUpScreen from './src/screens/SignUp';
 import HomeScreen from './src/screens/Home';
 import ProfileInfoScreen from './src/screens/ProfileInfo';
+import CreatePostingScreen from './src/screens/CreatePosting';
 
 enableScreens();
 
+const HomeStack = createStackNavigator();
 
-/*function HomeScreen() {
+function Home() {
   return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Text>Home!</Text>
-    </View>
-  );
-}*/
+        <HomeStack.Navigator
+        initialRouteName='Home'>
+          <HomeStack.Screen name='Home' component={HomeScreen} />
+          <HomeStack.Screen name='CreatePosting' component={CreatePostingScreen} />
+        </HomeStack.Navigator>
+  )
+}
 
 function SettingsScreen() {
   return (
@@ -87,9 +92,10 @@ export default function App() {
   return (
     <NavigationContainer>
       <Tab.Navigator>
+
         <Tab.Screen 
           name="Home" 
-          component={HomeScreen}
+          component={Home}
           options={{
             tabBarIcon: () => (
               <Image
