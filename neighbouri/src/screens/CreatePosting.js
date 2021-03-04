@@ -56,7 +56,7 @@ export default function CreatePostingScreen({navigation}) {
     }
   };
 
-  submitPosting = () => {
+  async function submitPosting()  {
     try {
       uploadImage();
       listingsCollection.add({
