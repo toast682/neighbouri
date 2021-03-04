@@ -6,7 +6,6 @@ import {
   FlatList,
   Button,
   TouchableOpacity,
-  Modal,
   Image,
 } from 'react-native';
 import firestore from '@react-native-firebase/firestore';
@@ -14,25 +13,17 @@ import {launchCamera} from 'react-native-image-picker';
 import ImagePicker from 'react-native-image-picker';
 import {TextInput} from 'react-native-gesture-handler';
 import storage from '@react-native-firebase/storage';
-import NumericInput from 'react-native-numeric-input'
-
-
+import NumericInput from 'react-native-numeric-input';
 
 const listingsCollection = firestore().collection('Listings');
 
 export default function HomeScreen({navigation}) {
-  const [show, setShow] = useState(false);
   const [photo, setPhoto] = useState(null);
   const [image, setImage] = useState('');
   const [search, setSearch] = useState('');
   const [fullListing, setFullListings] = useState([]);
   const [listings, setListings] = useState([]);
-  const [description, setDescription] = useState('');
   const [photoURI, setPhotoURI] = useState('');
-  const [itemName, setItemName] = useState('');
-  const [quantity, setQuantity] = useState(0);
-  const [price, setPrice] = useState(0);
-
 
   useEffect(() => {
     getData();
@@ -47,67 +38,33 @@ export default function HomeScreen({navigation}) {
       .get()
       .then((listingDocs) => {
         listingDocs.forEach((doc) => {
-          setFullListings((prev) => [...prev, doc.data()]);
-          setListings((prev) => [...prev, doc.data()]);
+          buildObject(doc);
         });
       });
   }
 
-   const takePhoto = () => {
-      const options = {
-        noData: true,
-      };
-      launchCamera(options, (response) => {
-        console.log('response', response);
-
-      if (response.didCancel) {
-        console.log('User cancelled image picker');
-      } else if (response.error) {
-        console.log('ImagePicker Error: ', response.error);
-      } else {
-        const source = { uri: response.uri };
-        console.log(source);
-        setPhoto(source);
-      }
-      });
-    };
-  
-  const uploadImage = async () => {
-    const { uri } = photo;
-    const filename = uri.substring(uri.lastIndexOf('/') + 1);
-    const task = storage()
-      .ref(filename)
-      .putFile(uri);
-    try {
-      await task;
-    } catch (e) {
-      console.error(e);
-    }
-    setPhoto(null);
-  };
-
-  submitPosting = () => {
-    try {
-      listingsCollection.add({
-        ImageURI: photoURI,
-        Item: itemName,
-        Description: description,
-        Price: price,
-        Quantity: quantity,
-      })
-    } catch (err) {
-      console.log(err);
-    }
+  async function buildObject(doc) {
+    const reference = await storage().ref(doc.data().ImageURI).getDownloadURL();
+    doc.data().photo = {uri: reference};
+    setFullListings((prev) => [...prev, doc.data()]);
+    setListings((prev) => [...prev, doc.data()]);
   }
-
-  searchList = (keyword) => {
+  //TODO: make adding a posting require having a name, description, etc.
+  function searchList(keyword) {
     setSearch(keyword);
     if (keyword === '') {
       setListings(fullListing);
     } else {
-      setListings(fullListing.filter((text) => text.Item == keyword));
+      setListings(
+        fullListing.filter(
+          (text) =>
+            text.Item.toLowerCase().includes(keyword) ||
+            text.Description.toLowerCase().includes(keyword) ||
+            text.Name.toLowerCase().includes(keyword),
+        ),
+      );
     }
-  };
+  }
 
   return (
     <View style={styles.container}>
@@ -120,7 +77,8 @@ export default function HomeScreen({navigation}) {
             placeholder="Search"
             placeholderTextColor={'grey'}
             value={search}
-            onChangeText={(text) => searchList(text)}></TextInput>
+            onChangeText={(text) => searchList(text)}
+          />
         }
         style={{width: '90%'}}
         renderItem={({item}) => (
@@ -132,7 +90,7 @@ export default function HomeScreen({navigation}) {
               marginVertical: 10,
             }}>
             <Image
-              source={require('../assets/default-avatar.jpg')}
+              source={item.photo}
               style={{width: 80, height: 80, borderRadius: 8}}
             />
             <View style={{padding: 5}}>
@@ -152,61 +110,9 @@ export default function HomeScreen({navigation}) {
       <Button
         title="Add a posting"
         onPress={() => {
-          setShow(true);
+          navigation.navigate('CreatePosting');
         }}
       />
-     
-
-      <Modal transparent={true} visible={show}>
-        <View style={styles.modalOuterContainer}>
-          <View style={styles.modalInnerContainer}>
-            <Text style={styles.title}> New Posting </Text>
-
-            <Button
-              style={styles.button}
-              title="Take a picture"
-              onPress={takePhoto}
-            />
-            <Text > Description </Text>
-            <TextInput
-                underlineColorAndroid = "transparent"
-                style={styles.input}
-                onChangeText={(description) => setDescription(description)}
-            />
-             <Text > Item Name </Text>
-            <TextInput
-                underlineColorAndroid = "transparent"
-                style={styles.input}
-                onChangeText={(itemName) => setItemName(itemName)}
-            />
-              <Text > Price </Text>
-              <NumericInput type='up-down' onChange={value => setPrice(value)} />
-
-              <Text > Quantity </Text>
-            <NumericInput type='up-down' onChange={value => setQuantity(value)} />
-
-              <Button
-              style={styles.button}
-              title="Submit"
-              onPress={submitPosting}
-            />  
-
-            <TouchableOpacity
-              style={styles.button}
-              onPress={() => {
-                setShow(false);
-              }}>
-              <Text>{'Close'}</Text>
-            </TouchableOpacity>
-
-            <Button
-              style={styles.button}
-              title="Upload"
-              onPress={uploadImage}
-            />
-          </View>
-        </View>
-      </Modal>
     </View>
   );
 }
@@ -250,5 +156,5 @@ const styles = StyleSheet.create({
     borderColor: '#000000',
     borderWidth: 1,
     width: 200,
- }
+  },
 });
