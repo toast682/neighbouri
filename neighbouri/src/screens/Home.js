@@ -15,8 +15,6 @@ import {TextInput} from 'react-native-gesture-handler';
 import storage from '@react-native-firebase/storage';
 import NumericInput from 'react-native-numeric-input';
 
-
-
 const listingsCollection = firestore().collection('Listings');
 
 export default function HomeScreen({navigation}) {
@@ -26,7 +24,6 @@ export default function HomeScreen({navigation}) {
   const [fullListing, setFullListings] = useState([]);
   const [listings, setListings] = useState([]);
   const [photoURI, setPhotoURI] = useState('');
-
 
   useEffect(() => {
     getData();
@@ -41,28 +38,33 @@ export default function HomeScreen({navigation}) {
       .get()
       .then((listingDocs) => {
         listingDocs.forEach((doc) => {
-        buildObject(doc);
+          buildObject(doc);
         });
       });
   }
 
   async function buildObject(doc) {
-    const reference = await storage()
-       .ref(doc.data().ImageURI)
-       .getDownloadURL();
+    const reference = await storage().ref(doc.data().ImageURI).getDownloadURL();
     doc.data().photo = {uri: reference};
     setFullListings((prev) => [...prev, doc.data()]);
     setListings((prev) => [...prev, doc.data()]);
   }
-
-  searchList = (keyword) => {
+  //TODO: make adding a posting require having a name, description, etc.
+  function searchList(keyword) {
     setSearch(keyword);
     if (keyword === '') {
       setListings(fullListing);
     } else {
-      setListings(fullListing.filter((text) => text.Item == keyword));
+      setListings(
+        fullListing.filter(
+          (text) =>
+            text.Item.toLowerCase().includes(keyword) ||
+            text.Description.toLowerCase().includes(keyword) ||
+            text.Name.toLowerCase().includes(keyword),
+        ),
+      );
     }
-  };
+  }
 
   return (
     <View style={styles.container}>
@@ -75,7 +77,8 @@ export default function HomeScreen({navigation}) {
             placeholder="Search"
             placeholderTextColor={'grey'}
             value={search}
-            onChangeText={(text) => searchList(text)}></TextInput>
+            onChangeText={(text) => searchList(text)}
+          />
         }
         style={{width: '90%'}}
         renderItem={({item}) => (
@@ -106,7 +109,9 @@ export default function HomeScreen({navigation}) {
       />
       <Button
         title="Add a posting"
-        onPress={() => {navigation.navigate('CreatePosting')}}
+        onPress={() => {
+          navigation.navigate('CreatePosting');
+        }}
       />
     </View>
   );
@@ -151,5 +156,5 @@ const styles = StyleSheet.create({
     borderColor: '#000000',
     borderWidth: 1,
     width: 200,
- }
+  },
 });
