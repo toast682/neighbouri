@@ -13,7 +13,7 @@ export default function RelatedItemsList({navigation, currentItemId, currentItem
 
     useEffect(() => {
         getData();
-    }, []);
+    }, [currentItemId]);
 
     const lowerCaseItem = currentItemTitle.toLowerCase();
     const upperCaseItem = currentItemTitle.toUpperCase();
@@ -31,7 +31,10 @@ export default function RelatedItemsList({navigation, currentItemId, currentItem
                 buildObject(doc);
               }
             });
-          });
+          })
+          .catch((error) => {
+            console.log("Caught an error in RelatedItemsList.js: ", error);
+        });
       }
     
     async function buildObject(doc) {
