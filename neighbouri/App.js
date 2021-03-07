@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { Text, View, Platform, Image } from 'react-native';
 import { enableScreens } from 'react-native-screens';
 import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack'
+import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import auth from '@react-native-firebase/auth';
 

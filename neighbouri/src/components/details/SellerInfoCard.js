@@ -13,7 +13,6 @@ export default function SellerInfoCard(sellerID) {
       }, []);
 
     async function getSeller() {
-        console.log(sellerID);
         await firestore()
           .collection('Users')
           .where("uid", "==", sellerID.SellerID)
@@ -21,11 +20,8 @@ export default function SellerInfoCard(sellerID) {
           .then((seller) => {
               if (!seller.empty) {
                 const sellerData = seller.docs[0].data();
-                console.log(sellerData);
                 setSeller(sellerData);
-                console.log(seller.SellerRating);
                 storage().ref(sellerData.IconURI).getDownloadURL().then((reference => {
-                    console.log(reference);
                     setAvatarURI(reference);
                 }));
               }
