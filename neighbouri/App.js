@@ -16,6 +16,7 @@ import SignUpScreen from './src/screens/SignUp';
 import HomeScreen from './src/screens/Home';
 import ProfileInfoScreen from './src/screens/ProfileInfo';
 import CreatePostingScreen from './src/screens/CreatePosting';
+import ListingDetailsScreen from './src/screens/ListingDetails';
 
 enableScreens();
 
@@ -27,6 +28,7 @@ function Home() {
         initialRouteName='Home'>
           <HomeStack.Screen name='Home' component={HomeScreen} />
           <HomeStack.Screen name='CreatePosting' component={CreatePostingScreen} />
+          <HomeStack.Screen name='ListingDetails' options={{ title: 'Listing Details' }} component={ListingDetailsScreen} />
         </HomeStack.Navigator>
   )
 }
