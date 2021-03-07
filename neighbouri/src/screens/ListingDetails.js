@@ -57,6 +57,7 @@ export default function ListingDetailsScreen({ route, navigation }) {
                     <RelatedItemsList
                         currentItemId={item.ListingID}
                         currentItemTitle={item.Item}
+                        navigation={navigation}
                     />
                 </View>
             </ScrollView>

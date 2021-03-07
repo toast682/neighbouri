@@ -8,7 +8,7 @@ import {
 import firestore from '@react-native-firebase/firestore';
 import storage from '@react-native-firebase/storage';
 
-export default function RelatedItemsList({currentItemId, currentItemTitle}) {
+export default function RelatedItemsList({navigation, currentItemId, currentItemTitle}) {
     const [relatedItems, setRelatedItems] = useState([]);
 
     useEffect(() => {
