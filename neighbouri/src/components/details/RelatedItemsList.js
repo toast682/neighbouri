@@ -17,12 +17,13 @@ export default function RelatedItemsList({navigation, currentItemId, currentItem
 
     const lowerCaseItem = currentItemTitle.toLowerCase();
     const upperCaseItem = currentItemTitle.toUpperCase();
+    const capitalizedFirstLetter = currentItemTitle.charAt(0).toUpperCase() + currentItemTitle.slice(1);
 
     async function getData() {
         setRelatedItems([]);
         await firestore()
           .collection('Listings')
-          .where('Item', 'in', [currentItemTitle, lowerCaseItem, upperCaseItem])
+          .where('Item', 'in', [currentItemTitle, lowerCaseItem, upperCaseItem, capitalizedFirstLetter])
           .get()
           .then((listingDocs) => {
             listingDocs.forEach((doc) => {
