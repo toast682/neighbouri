@@ -25,10 +25,13 @@ const HomeStack = createStackNavigator();
 function Home() {
   return (
         <HomeStack.Navigator
-        initialRouteName='Home'>
+        initialRouteName='Home'
+        screenOptions={{
+          headerShown: false,
+        }}>
           <HomeStack.Screen name='Home' component={HomeScreen} />
           <HomeStack.Screen name='CreatePosting' component={CreatePostingScreen} />
-          <HomeStack.Screen name='ListingDetails' options={{ title: 'Listing Details' }} component={ListingDetailsScreen} />
+          <HomeStack.Screen name='ListingDetails' component={ListingDetailsScreen} />
         </HomeStack.Navigator>
   )
 }
@@ -94,7 +97,6 @@ export default function App() {
   return (
     <NavigationContainer>
       <Tab.Navigator>
-
         <Tab.Screen 
           name="Home" 
           component={Home}

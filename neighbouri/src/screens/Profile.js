@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {SafeAreaView, Text, View, FlatList, Image} from 'react-native';
+import {SafeAreaView, Text, View, FlatList, Image, StyleSheet, Modal, TouchableOpacity} from 'react-native';
 import storage from '@react-native-firebase/storage';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
@@ -11,16 +11,26 @@ import SettingButton from '../components/SettingButton';
 import GeoButton from '../components/GeoButton';
 import ProfileIconButton from '../components/ProfileIconButton';
 import UserInfoText from '../components/profile/UserInfoText';
+import { Rating } from 'react-native-ratings';
+
 
 export default function ProfileScreen({navigation}) {
   const HFlatList = HPageViewHoc(FlatList);
 
   const [photo, setPhoto] = useState();
   const [user, setUser] = useState();
+  const [show, setShow] = useState(false);
+  const [currRating, setCurrRating] = useState(0);
+
 
   useEffect(() => {
     getData();
   }, []);
+
+  function showRating(rating) {
+    setCurrRating(rating);
+    setShow(true);
+  }
 
   async function getData() {
     const reference = await storage()
@@ -120,7 +130,7 @@ export default function ProfileScreen({navigation}) {
                 </View>
                 <View>
                   <Text>{item}</Text>
-                  <Text>Review Seller</Text>
+                  <Text onPress={()=>{showRating(3)}}>Review Seller</Text>
                 </View>
               </View>
             </View>
@@ -215,6 +225,63 @@ export default function ProfileScreen({navigation}) {
           keyExtractor={(name) => name}
         />
       </CollapsibleHeaderTabView>
+      <Modal
+        transparent={true}
+        visible={show}
+      >
+        <View style={styles.modalOuterContainer}>
+            <View style={styles.modalInnerContainer}>
+                <Text style={styles.title}> Seller Review </Text>
+                <Rating showRating imageSize={40} readonly startingValue={currRating} />
+                <TouchableOpacity style={styles.button} onPress={()=>{setShow(false)}}>
+                    <Text>{"Close"}</Text>
+                </TouchableOpacity>
+            </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 }
+
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#ffffff',
+    alignItems: 'center',
+  },
+
+  title: {
+    color: '#3dafe0',
+    fontSize: 30,
+    fontWeight: 'bold',
+    marginTop: 50,
+    marginBottom: 70,
+  },
+
+  modalOuterContainer: {
+    flex: 1,
+    backgroundColor: '#000000aa',
+  },
+
+  modalInnerContainer: {
+    flex: 1,
+    backgroundColor: '#ffffff',
+    margin: 50,
+    padding: 40,
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+
+  button: {
+    color: '#3dafe0',
+    margin: 50,
+  },
+  input: {
+    margin: 10,
+    height: 40,
+    borderColor: '#000000',
+    borderWidth: 1,
+    width: 200,
+  },
+});
