@@ -7,6 +7,7 @@ import {
   Button,
   TouchableOpacity,
   Image,
+  Modal,
 } from 'react-native';
 import firestore from '@react-native-firebase/firestore';
 import {launchCamera} from 'react-native-image-picker';
@@ -14,6 +15,7 @@ import ImagePicker from 'react-native-image-picker';
 import {TextInput} from 'react-native-gesture-handler';
 import storage from '@react-native-firebase/storage';
 import NumericInput from 'react-native-numeric-input';
+import { Rating } from 'react-native-ratings';
 
 const listingsCollection = firestore().collection('Listings');
 
@@ -24,6 +26,8 @@ export default function HomeScreen({navigation}) {
   const [fullListing, setFullListings] = useState([]);
   const [listings, setListings] = useState([]);
   const [photoURI, setPhotoURI] = useState('');
+  const [show, setShow] = useState(false);
+  const [currRating, setCurrRating] = useState(0);
 
   useEffect(() => {
     getData();
@@ -66,6 +70,11 @@ export default function HomeScreen({navigation}) {
     }
   }
 
+  function showRating(rating) {
+    setCurrRating(rating);
+    setShow(true);
+  }
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>{'Your postings'}</Text>
@@ -82,13 +91,15 @@ export default function HomeScreen({navigation}) {
         }
         style={{width: '90%'}}
         renderItem={({item}) => (
-          <View
+          <TouchableOpacity
             style={{
               borderWidth: 1,
               borderRadius: 8,
               flexDirection: 'row',
               marginVertical: 10,
-            }}>
+            }}
+            onPress={() => {showRating(item.Rating)}}
+          >
             <Image
               source={item.photo}
               style={{width: 80, height: 80, borderRadius: 8}}
@@ -103,7 +114,7 @@ export default function HomeScreen({navigation}) {
               </Text>
               <Text>{item.Description}</Text>
             </View>
-          </View>
+          </TouchableOpacity>
         )}
         keyExtractor={(item) => item.Name}
       />
@@ -113,6 +124,21 @@ export default function HomeScreen({navigation}) {
           navigation.navigate('CreatePosting');
         }}
       />
+
+      <Modal
+        transparent={true}
+        visible={show}
+      >
+        <View style={styles.modalOuterContainer}>
+            <View style={styles.modalInnerContainer}>
+                <Text style={styles.title}> Seller Review </Text>
+                <Rating showRating imageSize={40} readonly startingValue={currRating} />
+                <TouchableOpacity style={styles.button} onPress={()=>{setShow(false)}}>
+                    <Text>{"Close"}</Text>
+                </TouchableOpacity>
+            </View>
+        </View>
+      </Modal>
     </View>
   );
 }
