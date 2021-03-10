@@ -91,28 +91,28 @@ export default function HomeScreen({navigation}) {
         }
         style={{width: '90%'}}
         renderItem={({item}) => (
-          <TouchableOpacity
-            style={{
-              borderWidth: 1,
-              borderRadius: 8,
-              flexDirection: 'row',
-              marginVertical: 10,
-            }}
-            onPress={() => {showRating(item.Rating)}}
-          >
-            <Image
-              source={item.photo}
-              style={{width: 80, height: 80, borderRadius: 8}}
-            />
-            <View style={{padding: 5}}>
-              <Text>{item.Item}</Text>
-              <Text>
-                {item.Quantity} @ {item.Price}
-              </Text>
-              <Text>
-                {item.Name} - #{item.Suite}
-              </Text>
-              <Text>{item.Description}</Text>
+          <TouchableOpacity onPress={() => navigation.navigate('ListingDetails', item)}>
+            <View
+              style={{
+                borderWidth: 1,
+                borderRadius: 8,
+                flexDirection: 'row',
+                marginVertical: 10,
+              }}>
+              <Image
+                source={item.photo}
+                style={{width: 80, height: 80, borderRadius: 8}}
+              />
+              <View style={{padding: 5}}>
+                <Text>{item.Item}</Text>
+                <Text>
+                  {item.Quantity} @ {item.Price}
+                </Text>
+                <Text>
+                  {item.Name} - #{item.Suite}
+                </Text>
+                <Text>{item.Description}</Text>
+              </View>
             </View>
           </TouchableOpacity>
         )}

@@ -71,6 +71,9 @@ async function signUp(username, email, postalCode, password, setErrorMessage) {
                 usersCollection.add({
                     uid: userCredential.user.uid,
                     postalCode: postalCode,
+                    email: email,
+                    Username: username,
+                    bookmarks: []
                   })
                   .then(() => {
                     console.log('User to cloud storage');
