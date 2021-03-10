@@ -37,14 +37,10 @@ export default function SellerInfoCard(sellerID) {
             style={{ alignSelf: 'stretch' }}>
             <View style={{
                 alignSelf: 'stretch',
-                margin: 10,
+                marginLeft: 10,
+                marginRight: 10,
                 padding: 5
                 }}>
-                <Text
-                    style={ { fontSize: 16 } 
-                }>
-                    Seller Info
-                </Text>
                 <View style={{flexDirection: 'row'}}>
                     <View style={{flex: 1, minHeight: 70}}>
                         {!!avatarURI && <Image
@@ -62,12 +58,12 @@ export default function SellerInfoCard(sellerID) {
                     </View>
                     <View style={{
                         flex: 2,
-                        alignItems: 'center',
                         justifyContent: 'center',
+                        padding: 10,
                         minHeight: 70
                         }}>
                         <Text>{seller && seller.Username}</Text>
-                        <Text>{seller && seller.postalCode}</Text>
+                        <Text>{seller && seller.email}</Text>
                     </View>
                     <View style={{
                         flex: 2,

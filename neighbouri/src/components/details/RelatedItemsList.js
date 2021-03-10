@@ -56,7 +56,7 @@ export default function RelatedItemsList({navigation, currentItemId, currentItem
               }}>
               <Image
                 source={item.photo}
-                style={{width: 80, height: 80, borderRadius: 8}}
+                style={{width: 90, height: 90, borderRadius: 8}}
               />
               <View style={{padding: 5, alignItems: 'center'}}>
                 <Text>{item.Item}</Text>
