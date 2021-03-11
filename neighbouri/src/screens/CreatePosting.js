@@ -56,7 +56,7 @@ export default function CreatePostingScreen({navigation}) {
     }
   };
 
-  async function submitPosting()  {
+  async function submitPosting() {
     try {
       uploadImage();
       listingsCollection.add({
@@ -80,7 +80,7 @@ export default function CreatePostingScreen({navigation}) {
     } catch (err) {
       console.log(err);
     }
-  };
+  }
 
   return (
     <View style={styles.container}>

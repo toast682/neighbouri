@@ -68,7 +68,7 @@ export default function HomeScreen({navigation}) {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>{'Your postings'}</Text>
+      <Text style={styles.title}>{'Postings'}</Text>
       <FlatList
         data={[...new Set(listings)]}
         ListHeaderComponent={
@@ -80,19 +80,21 @@ export default function HomeScreen({navigation}) {
             onChangeText={(text) => searchList(text)}
           />
         }
-        style={{width: '90%'}}
         renderItem={({item}) => (
-          <View
-            style={{
-              borderWidth: 1,
-              borderRadius: 8,
-              flexDirection: 'row',
-              marginVertical: 10,
-            }}>
-            <Image
-              source={item.photo}
-              style={{width: 80, height: 80, borderRadius: 8}}
-            />
+          <>
+            <View
+              style={{
+                borderWidth: 1,
+                borderRadius: 8,
+                flexDirection: 'row',
+                marginVertical: 30,
+                flexShrink: 1,
+              }}>
+              <Image
+                source={item.photo}
+                style={{width: 80, height: 80, borderRadius: 10}}
+              />
+            </View>
             <View style={{padding: 5}}>
               <Text>{item.Item}</Text>
               <Text>
@@ -103,9 +105,10 @@ export default function HomeScreen({navigation}) {
               </Text>
               <Text>{item.Description}</Text>
             </View>
-          </View>
+          </>
         )}
-        keyExtractor={(item) => item.Name}
+        keyExtractor={(item, index) => index.toString()}
+        numColumns={2}
       />
       <Button
         title="Add a posting"
@@ -118,6 +121,9 @@ export default function HomeScreen({navigation}) {
 }
 
 const styles = StyleSheet.create({
+  wrapper: {
+    alignItems: 'center',
+  },
   container: {
     flex: 1,
     backgroundColor: '#ffffff',
