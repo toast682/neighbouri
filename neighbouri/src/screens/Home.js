@@ -7,6 +7,7 @@ import {
   Button,
   TouchableOpacity,
   Image,
+  Modal,
 } from 'react-native';
 import firestore from '@react-native-firebase/firestore';
 import {launchCamera} from 'react-native-image-picker';
@@ -24,6 +25,7 @@ export default function HomeScreen({navigation}) {
   const [fullListing, setFullListings] = useState([]);
   const [listings, setListings] = useState([]);
   const [photoURI, setPhotoURI] = useState('');
+
 
   useEffect(() => {
     getData();
@@ -81,7 +83,7 @@ export default function HomeScreen({navigation}) {
           />
         }
         renderItem={({item}) => (
-          <>
+          <TouchableOpacity onPress={() => navigation.navigate('ListingDetails', item)}>
             <View
               style={{
                 borderWidth: 1,
@@ -105,7 +107,7 @@ export default function HomeScreen({navigation}) {
               </Text>
               <Text>{item.Description}</Text>
             </View>
-          </>
+        </TouchableOpacity>
         )}
         keyExtractor={(item, index) => index.toString()}
         numColumns={2}
