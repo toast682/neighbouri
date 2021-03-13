@@ -37,6 +37,7 @@
     "react-native-screens": "^2.17.1",
     "react-native-scrollable-tab-view": "^1.0.0",
     "react-native-scrollable-tab-view-collapsible-header": "^0.0.3",
+    "react-table": "^7.6.3",
     "react-native-vector-icons": "^8.1.0"
   },
   "devDependencies": {
