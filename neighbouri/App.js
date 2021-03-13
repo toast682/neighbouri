@@ -30,7 +30,6 @@ function Home() {
           headerShown: false,
         }}>
           <HomeStack.Screen name='Home' component={HomeScreen} />
-          <HomeStack.Screen name='CreatePosting' component={CreatePostingScreen} />
           <HomeStack.Screen name='ListingDetails' component={ListingDetailsScreen} />
         </HomeStack.Navigator>
   )
@@ -46,9 +45,13 @@ function SavedScreen() {
 
 function CreateScreen() {
   return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Text>Saved!</Text>
-    </View>
+    <HomeStack.Navigator
+        initialRouteName='CreatePosting'
+        screenOptions={{
+          headerShown: false,
+        }}>
+          <HomeStack.Screen name='CreatePosting' component={CreatePostingScreen} />
+        </HomeStack.Navigator>
   );
 }
 

@@ -4,39 +4,103 @@ import {
   View,
   StyleSheet,
   FlatList,
-  Button,
   TouchableOpacity,
   Image,
-  Modal,
+  Platform,
+  PermissionsAndroid,
 } from 'react-native';
 import firestore from '@react-native-firebase/firestore';
-import {launchCamera} from 'react-native-image-picker';
-import ImagePicker from 'react-native-image-picker';
 import {TextInput} from 'react-native-gesture-handler';
 import storage from '@react-native-firebase/storage';
-import NumericInput from 'react-native-numeric-input';
-
-const listingsCollection = firestore().collection('Listings');
+import geohash from 'ngeohash';
+import Geolocation from '@react-native-community/geolocation';
 
 export default function HomeScreen({navigation}) {
-  const [photo, setPhoto] = useState(null);
-  const [image, setImage] = useState('');
   const [search, setSearch] = useState('');
   const [fullListing, setFullListings] = useState([]);
   const [listings, setListings] = useState([]);
-  const [photoURI, setPhotoURI] = useState('');
-
+  const [filters, setFilters] = useState([]);
+  const [loc, setLoc] = useState('c2b2q7');
 
   useEffect(() => {
+    getLocation();
     getData();
   }, []);
+
+  async function getLocation() {
+    if (Platform.OS === 'android') {
+      try {
+        const granted = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+          {
+            title: 'Neighbouri Location Permission',
+            message:
+              'Neighbouri needs access to your location ' +
+              'to connect you with others around you!',
+            buttonNeutral: 'Ask Me Later',
+            buttonNegative: 'Cancel',
+            buttonPositive: 'OK',
+          },
+        );
+        if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+          Geolocation.getCurrentPosition(
+            (position) => {
+              console.log(position.coords.latitude, position.coords.longitude);
+              // Comment line below for faked location
+              // setLoc(geohash.encode(position.coords.latitude, position.coords.longitude, 6));
+              console.log(
+                geohash.encode(
+                  position.coords.latitude,
+                  position.coords.longitude,
+                  6,
+                ),
+              );
+            },
+            (err) => {
+              console.error(err);
+            },
+            {enableHighAccuracy: true, maximumAge: 0},
+          );
+        } else {
+          alert('Permission Denied');
+        }
+      } catch (err) {
+        console.warn(err);
+      }
+    } else {
+      Geolocation.getCurrentPosition((info) => {
+        // Comment line below for faked location
+        // setLoc(geohash.encode(info.coords.latitude, info.coords.longitude, 6));
+        console.log(
+          geohash.encode(info.coords.latitude, info.coords.longitude, 6),
+        );
+      });
+    }
+  }
 
   async function getData() {
     setFullListings([]);
     setListings([]);
     await firestore()
       .collection('Listings')
-      .orderBy('PostedDate')
+      .where('Location', '==', loc)
+      .orderBy('PostedDate', 'desc')
+      .get()
+      .then((listingDocs) => {
+        listingDocs.forEach((doc) => {
+          buildObject(doc);
+        });
+      });
+  }
+
+  async function getFiltered(f) {
+    setFullListings([]);
+    setListings([]);
+    await firestore()
+      .collection('Listings')
+      .where('Category', 'in', f)
+      .where('Location', '==', loc)
+      .orderBy('PostedDate', 'desc')
       .get()
       .then((listingDocs) => {
         listingDocs.forEach((doc) => {
@@ -60,9 +124,9 @@ export default function HomeScreen({navigation}) {
       setListings(
         fullListing.filter(
           (text) =>
-            text.Item.toLowerCase().includes(keyword) ||
-            text.Description.toLowerCase().includes(keyword) ||
-            text.Name.toLowerCase().includes(keyword),
+            text.Item.toLowerCase().includes(keyword.toLowerCase()) ||
+            text.Description.toLowerCase().includes(keyword.toLowerCase()) ||
+            text.Name.toLowerCase().includes(keyword.toLowerCase()),
         ),
       );
     }
@@ -70,53 +134,135 @@ export default function HomeScreen({navigation}) {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>{'Postings'}</Text>
       <FlatList
+        style={{marginHorizontal: '5%'}}
+        showsVerticalScrollIndicator={false}
         data={[...new Set(listings)]}
         ListHeaderComponent={
-          <TextInput
-            style={{borderWidth: 1, borderRadius: 8, padding: 8}}
-            placeholder="Search"
-            placeholderTextColor={'grey'}
-            value={search}
-            onChangeText={(text) => searchList(text)}
-          />
-        }
-        renderItem={({item}) => (
-          <TouchableOpacity onPress={() => navigation.navigate('ListingDetails', item)}>
+          <View>
+            <Text style={styles.title}>What your neighbours are selling</Text>
+            <TextInput
+              style={{
+                borderBottomWidth: 1,
+                padding: 8,
+                marginTop: 20,
+              }}
+              placeholder="Search..."
+              placeholderTextColor={'grey'}
+              value={search}
+              onChangeText={(text) => searchList(text)}
+            />
+            <FlatList
+              data={[
+                'All',
+                'Bakery',
+                'Dairy',
+                'Fruit',
+                'Vegetable',
+                'Meals',
+                'Non-Perishable',
+              ]}
+              style={{marginTop: 20}}
+              showsHorizontalScrollIndicator={false}
+              horizontal={true}
+              renderItem={({item}) => (
+                <TouchableOpacity
+                  onPress={() => {
+                    if (item === 'All') {
+                      getData();
+                      setFilters([]);
+                    } else {
+                      if (filters.includes(item)) {
+                        let newFilter = filters.filter(
+                          (thing) => thing !== item,
+                        );
+                        setFilters(newFilter);
+                        if (newFilter.length === 0) {
+                          getData();
+                        } else {
+                          getFiltered(
+                            filters.filter((thing) => thing !== item),
+                          );
+                        }
+                      } else {
+                        let newFilter = [...filters, item];
+                        setFilters(newFilter);
+                        getFiltered(newFilter);
+                      }
+                    }
+                  }}
+                  style={{
+                    backgroundColor:
+                      (!filters.includes(item) && item !== 'All') ||
+                      (item === 'All' && filters.length > 0)
+                        ? '#f0a17525'
+                        : '#f0a175',
+                    borderRadius: 20,
+                    marginRight: 10,
+                    height: 40,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    paddingHorizontal: 20,
+                  }}>
+                  <Text
+                    style={{
+                      color:
+                        (!filters.includes(item) && item !== 'All') ||
+                        (item === 'All' && filters.length > 0)
+                          ? '#f0a175'
+                          : 'white',
+                    }}>
+                    {item}
+                  </Text>
+                </TouchableOpacity>
+              )}
+            />
             <View
               style={{
-                borderWidth: 1,
+                flexDirection: 'row',
+                marginVertical: 10,
+                alignItems: 'center',
+              }}>
+              <Image
+                source={require('../assets/Location.png')}
+                style={{
+                  width: 20,
+                  height: 20,
+                }}></Image>
+              <Text style={{color: '#f0a175'}}>500m</Text>
+            </View>
+          </View>
+        }
+        renderItem={({item}) => (
+          <TouchableOpacity
+            style={{
+              width: '48%',
+              marginHorizontal: '1%',
+              marginBottom: 10,
+              height: 220,
+              borderRadius: 8,
+              backgroundColor: '#faf9f9',
+            }}
+            onPress={() => navigation.navigate('ListingDetails', item)}>
+            <View
+              style={{
                 borderRadius: 8,
                 flexDirection: 'row',
-                marginVertical: 30,
-                flexShrink: 1,
               }}>
               <Image
                 source={item.photo}
-                style={{width: 80, height: 80, borderRadius: 10}}
+                style={{width: '100%', height: 150, borderRadius: 10}}
               />
             </View>
             <View style={{padding: 5}}>
-              <Text>{item.Item}</Text>
-              <Text>
-                {item.Quantity} @ {item.Price}
-              </Text>
-              <Text>
-                {item.Name} - #{item.Suite}
-              </Text>
-              <Text>{item.Description}</Text>
+              <Text style={{fontWeight: 'bold'}}>{item.Item}</Text>
+              <Text>${item.Price}</Text>
+              <Text>{item.Name}</Text>
             </View>
-        </TouchableOpacity>
+          </TouchableOpacity>
         )}
         keyExtractor={(item, index) => index.toString()}
         numColumns={2}
-      />
-      <Button
-        title="Add a posting"
-        onPress={() => {
-          navigation.navigate('CreatePosting');
-        }}
       />
     </View>
   );
@@ -133,11 +279,11 @@ const styles = StyleSheet.create({
   },
 
   title: {
-    color: '#3dafe0',
-    fontSize: 30,
-    fontWeight: 'bold',
-    marginTop: 50,
-    marginBottom: 70,
+    color: 'black',
+    fontSize: 24,
+    marginTop: 70,
+    width: '80%',
+    alignSelf: 'flex-start',
   },
 
   modalOuterContainer: {
