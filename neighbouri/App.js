@@ -36,10 +36,26 @@ function Home() {
   )
 }
 
-function SettingsScreen() {
+function SavedScreen() {
   return (
     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Text>Settings!</Text>
+      <Text>Saved!</Text>
+    </View>
+  );
+}
+
+function CreateScreen() {
+  return (
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <Text>Saved!</Text>
+    </View>
+  );
+}
+
+function FeedScreen() {
+  return (
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <Text>Feed!</Text>
     </View>
   );
 }
@@ -101,28 +117,45 @@ export default function App() {
           name="Home" 
           component={Home}
           options={{
-            tabBarIcon: () => (
+            tabBarLabel: '',
+            tabBarIcon: ({focused}) => (
               <Image
-                source={require('./src/assets/Setting.png')}
+                source={focused ? require('./src/assets/HomeF.png') : require('./src/assets/Home.png')}
                 style={{
-                  tintColor: "#ff0116",
                   width: '60%',
                   height: '60%',
                   resizeMode: 'contain',
+                  marginTop: 20,
+                }}
+              />
+            ),
+          }} />
+          <Tab.Screen 
+          name="Saved" 
+          component={SavedScreen}
+          options={{
+            tabBarLabel: '',
+            tabBarIcon: ({focused}) => (
+              <Image
+                source={focused ? require('./src/assets/SavedF.png') : require('./src/assets/Saved.png')}
+                style={{
+                  width: '60%',
+                  height: '60%',
+                  resizeMode: 'contain',
+                  marginTop: 20,
                 }}
               />
             ),
           }} />
         <Tab.Screen 
-          name="Settings" 
-          component={SettingsScreen}
+          name="Create" 
+          component={CreateScreen}
           options={{
             tabBarLabel: '',
             tabBarIcon: () => (
               <Image
-                source={require('./src/assets/Setting.png')}
+                source={require('./src/assets/Create.png')}
                 style={{
-                  tintColor: "#ff0116",
                   width: Platform.OS === 'ios' ? 70 : 60,
                   height: Platform.OS === 'ios' ? 70 : 60,
                   resizeMode: 'contain',
@@ -131,18 +164,36 @@ export default function App() {
               />
             ),
           }} />
+          <Tab.Screen 
+          name="Feed" 
+          component={FeedScreen}
+          options={{
+            tabBarLabel: '',
+            tabBarIcon: ({focused}) => (
+              <Image
+                source={focused ? require('./src/assets/NotificationF.png') : require('./src/assets/Notification.png')}
+                style={{
+                  width: '60%',
+                  height: '60%',
+                  resizeMode: 'contain',
+                  marginTop: 20,
+                }}
+              />
+            ),
+          }} />
         <Tab.Screen 
           name="Profile" 
           component={Profile}
           options={{
-            tabBarIcon: () => (
+            tabBarLabel: '',
+            tabBarIcon: ({focused}) => (
               <Image
-                source={require('./src/assets/Setting.png')}
-                style={{
-                  tintColor: "#ff0116",
+              source={focused ? require('./src/assets/ProfileF.png') : require('./src/assets/Profile.png')}
+              style={{
                   width: '60%',
                   height: '60%',
                   resizeMode: 'contain',
+                  marginTop: 20,
                 }}
               />
             ),

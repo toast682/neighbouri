@@ -5,10 +5,11 @@ import firestore from '@react-native-firebase/firestore';
 
 const styles = StyleSheet.create({
     titleText: {
-      fontSize: 50,
+      fontSize: 30,
+      marginVertical: 20,
       fontWeight: "bold",
       textAlign: "center",
-      color: "dodgerblue"
+      color: "black"
     },
     subTitleText: {
         fontSize: 25,
@@ -19,34 +20,36 @@ const styles = StyleSheet.create({
     linkButton: {
         alignItems: "center",
         marginTop: 30,
-        height: 50
+        height: 50,
     },
     linkButtonText: {
         fontSize: 15,
-        color: "dodgerblue"
+        color: "black"
     },
     formContainer: {
         flex: 1,
-        justifyContent: "center",
-        alignItems: "center"
+        alignItems: "center",
+        backgroundColor: 'white'
     },
     centeredForm: {
-        width: 250
+        width: '80%',
     },
     signUpButton: {
-        marginTop: 15
+        marginTop: 25,
+        width: '100%',
+        backgroundColor: '#48ca36',
+        borderRadius: 8,
     },
     validationError: {
         fontSize: 15,
         textAlign: "center",
         color: "red",
         marginTop: 15
-    }
+    },
+    inputStyle: {height: 40, width: '100%', borderColor: '#6c6767', borderWidth: 1, borderRadius: 8, marginTop: 10, paddingLeft: 5,},
   });
 
-const usersCollection = firestore().collection('Users');
-
-async function signUp(username, email, postalCode, password, setErrorMessage) {
+async function signUp(username, email, fullName, password, setErrorMessage) {
     if (!username) {
         setErrorMessage('Please enter a username');
         return;
@@ -68,12 +71,11 @@ async function signUp(username, email, postalCode, password, setErrorMessage) {
                 displayName: username
             }).then(() => {
                 console.log("Added display name to user");
-                usersCollection.add({
+                firestore().collection('Users').doc(userCredential.user.uid).set({
                     uid: userCredential.user.uid,
-                    postalCode: postalCode,
+                    fullName: fullName,
                     email: email,
-                    Username: username,
-                    bookmarks: []
+                    Username: username
                   })
                   .then(() => {
                     console.log('User to cloud storage');
@@ -104,44 +106,48 @@ async function signUp(username, email, postalCode, password, setErrorMessage) {
 
 export default function SignUpScreen({ navigation }) {
     const [email, setEmail] = React.useState('');
+    const [fullName, setFullName] = React.useState('');
     const [username, setUsername] = React.useState('');
-    const [postalCode, setPostalCode] = React.useState('');
     const [password, setPassword] = React.useState('');
     const [errorMessage, setErrorMessage] = React.useState('');
 
     return (
         <View style={styles.formContainer}>
             <View style={styles.centeredForm}>
+                <View style={{backgroundColor: 'green', width: 100, height: 100, alignSelf: 'center', marginTop: 100, borderRadius: 100,}}></View>
                 <Text style={styles.titleText}>Sign Up</Text>
-                <Text style={styles.subTitleText}>to Neighbouri</Text>
+                <TextInput
+                    placeholder="Full Name"
+                    value={fullName}
+                    style={styles.inputStyle}
+                    onChangeText={setFullName}
+                    placeholderTextColor="grey"
+                />
                 <TextInput
                     placeholder="Username"
                     value={username}
+                    style={styles.inputStyle}
                     onChangeText={setUsername}
                     placeholderTextColor="grey"
                 />
                 <TextInput
                     placeholder="Email"
                     value={email}
+                    style={styles.inputStyle}
                     onChangeText={setEmail}
-                    placeholderTextColor="grey"
-                />
-                <TextInput
-                    placeholder="Postal Code (Optional)"
-                    value={postalCode}
-                    onChangeText={setPostalCode}
                     placeholderTextColor="grey"
                 />
                 <TextInput
                     placeholder="Password"
                     value={password}
+                    style={styles.inputStyle}
                     onChangeText={setPassword}
                     secureTextEntry
                     placeholderTextColor="grey"
                 />
                 <View style={styles.signUpButton} >
-                    <Button title="Sign up" onPress={() => {
-                                    signUp(username, email, postalCode, password, setErrorMessage)
+                    <Button title="SIGN UP" color='white' onPress={() => {
+                                    signUp(username, email, fullName, password, setErrorMessage)
                                     .then(() => {
                                         // do nothing
                                     }).catch((error) => {
@@ -159,7 +165,7 @@ export default function SignUpScreen({ navigation }) {
                     style={styles.linkButton}
                     onPress={() => navigation.navigate('LogIn')}
                 >
-                    <Text style={styles.linkButtonText}>Already have an account? Log In</Text>
+                    <Text style={styles.linkButtonText}>Already have an account? <Text style={{color: '#f9a528'}}>Log In</Text></Text>
                 </TouchableOpacity>
             </View>
         </View>
