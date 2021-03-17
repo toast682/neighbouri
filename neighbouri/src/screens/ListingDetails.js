@@ -1,6 +1,5 @@
 import React, {useEffect, useState} from 'react';
 import {
-  Button,
   Text,
   View,
   ScrollView,
@@ -9,74 +8,13 @@ import {
 import RelatedItemsList from '../components/details/RelatedItemsList';
 import {Icon} from 'react-native-elements';
 import SellerInfoCard from '../components/details/SellerInfoCard';
-import auth from '@react-native-firebase/auth';
-import firestore from '@react-native-firebase/firestore';
 import Header from '../components/navigation/Header';
 import BackButton from '../components/navigation/BackButton';
 import { TouchableOpacity } from 'react-native';
 import BookmarkButton from '../components/BookmarkButton';
 
-const usersCollection = firestore().collection('Users');
-
 export default function ListingDetailsScreen({route, navigation}) {
   const item = route.params;
-  const [isBookmarked, setIsBookmarked] = useState(false);
-  const [userBookmarks, setUserBookmarks] = useState([]);
-  const [userDocumentId, setUserDocumentId] = useState('');
-  const currentUser = auth().currentUser;
-  const currentUserId = currentUser.uid;
-
-  useEffect(() => {
-    getCurrentUser();
-  }, []);
-
-  async function getCurrentUser() {
-    await firestore()
-      .collection('Users')
-      .where('uid', '==', currentUserId)
-      .get()
-      .then((userDocs) => {
-        setUserDocumentId(userDocs.docs[0].id);
-        const bookmarks =
-          userDocs.docs[0].data() && userDocs.docs[0].data().bookmarks;
-        setUserBookmarks(bookmarks);
-        if (bookmarks.includes(item.ListingID)) {
-          setIsBookmarked(true);
-        }
-      })
-      .catch((e) => {
-        console.log('There was an error getting user: ', e);
-      });
-  }
-
-  async function addToBookmarks() {
-    await usersCollection
-      .doc(userDocumentId)
-      .update({
-        bookmarks: [...userBookmarks, item.ListingID],
-      })
-      .then(() => {
-        setIsBookmarked(true);
-      })
-      .catch((e) => {
-        console.log('There was an error adding bookmark added to user: ', e);
-      });
-  }
-
-  async function removeFromBookmarks() {
-    const rmBookmarks = userBookmarks.filter((b) => b !== item.ListingID);
-    await usersCollection
-      .doc(userDocumentId)
-      .update({
-        bookmarks: rmBookmarks,
-      })
-      .then(() => {
-        setIsBookmarked(false);
-      })
-      .catch((e) => {
-        console.log('There was an error removing bookmark from user: ', e);
-      });
-  }
 
   return (
     <View style={{flex: 1, backgroundColor: 'white'}}>

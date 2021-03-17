@@ -8,6 +8,8 @@ import {Icon} from 'react-native-elements';
 export default function SellerInfoCard(sellerID) {
     const [seller, setSeller] = useState(null);
     const [avatarURI, setAvatarURI] = useState('');
+    const [sellerRating, setSellerRating] = useState(0);
+    const [sellerNumberOfRatings, setSellerNumberOfRatings] = useState(0);
 
     useEffect(() => {
         getSeller();
@@ -22,6 +24,10 @@ export default function SellerInfoCard(sellerID) {
               if (!seller.empty) {
                 const sellerData = seller.docs[0].data();
                 setSeller(sellerData);
+                if (!!sellerData  && !!sellerData.SellerRating) {
+                    setSellerRating(sellerData.SellerRating[1]);
+                    setSellerNumberOfRatings(sellerData.SellerRating[0]);
+                }
                 storage().ref(sellerData.IconURI).getDownloadURL().then((reference => {
                     setAvatarURI(reference);
                 }));
@@ -88,12 +94,12 @@ export default function SellerInfoCard(sellerID) {
                         minHeight: 70
                         }}>
                         <Rating
-                            startingValue={!!seller ? !!seller.SellerRating && seller.SellerRating.Rating : 0}
+                            startingValue={sellerRating}
                             readonly={true}
                             imageSize={20}
                             ratingCount={5}
                         />
-                        <Text> ({!!seller ? !!seller.SellerRating && seller.SellerRating.NumberOfRatings : 0})</Text>
+                        <Text> ({sellerNumberOfRatings})</Text>
                     </View>
                 </View>
             </View>
