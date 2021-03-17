@@ -3,6 +3,7 @@ import { Image, View, Text, TouchableOpacity } from 'react-native';
 import firestore from '@react-native-firebase/firestore';
 import storage from '@react-native-firebase/storage';
 import { Rating } from 'react-native-ratings';
+import {Icon} from 'react-native-elements';
 
 export default function SellerInfoCard(sellerID) {
     const [seller, setSeller] = useState(null);
@@ -63,19 +64,36 @@ export default function SellerInfoCard(sellerID) {
                         minHeight: 70
                         }}>
                         <Text>{seller && seller.Username}</Text>
+                        <View style={{
+                            flex: 1,
+                            alignItems: 'center',
+                            flexDirection: 'row'
+                        }}>
+                        <View style={{
+                            marginRight: 4
+                        }}>
+                        <Icon
+                            name="envelope-o"
+                            type="font-awesome"
+                            size={15}
+                        />
+                        </View>
                         <Text>{seller && seller.email}</Text>
+                        </View>
                     </View>
                     <View style={{
                         flex: 2,
-                        alignItems: 'center',
+                        paddingTop: 10,
+                        flexDirection: 'row',
                         minHeight: 70
                         }}>
                         <Rating
-                            startingValue={!!seller ? seller.SellerRating : 0}
+                            startingValue={!!seller ? !!seller.SellerRating && seller.SellerRating.Rating : 0}
                             readonly={true}
-                            imageSize={25}
+                            imageSize={20}
                             ratingCount={5}
                         />
+                        <Text> ({!!seller ? !!seller.SellerRating && seller.SellerRating.NumberOfRatings : 0})</Text>
                     </View>
                 </View>
             </View>

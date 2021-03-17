@@ -3,10 +3,13 @@ import {
   Text,
   View,
   TouchableOpacity,
+  SafeAreaView,
   Image,
+  ImageBackground
 } from 'react-native';
 import firestore from '@react-native-firebase/firestore';
 import storage from '@react-native-firebase/storage';
+import BookmarkButton from '../BookmarkButton';
 
 export default function RelatedItemsList({navigation, currentItemId, currentItemTitle}) {
     const [relatedItems, setRelatedItems] = useState([]);
@@ -45,34 +48,49 @@ export default function RelatedItemsList({navigation, currentItemId, currentItem
 
     const listItems = relatedItems.map((item, index) => {
       return (
-          <TouchableOpacity
-            onPress={() => navigation.navigate('ListingDetails', item)}
+          <View
             key={index}
-          >
-            <View
-              style={{
-                borderRadius: 8,
-                margin: 2
-              }}>
-              <Image
+            style={{
+                borderRadius: 15,
+                margin: 2,
+                backgroundColor: '#FAF9F9'
+              }}
+          > 
+            <ImageBackground 
                 source={item.photo}
-                style={{width: 90, height: 90, borderRadius: 8}}
-              />
-              <View style={{padding: 5, alignItems: 'center'}}>
-                <Text>{item.Item}</Text>
+                style={{
+                  width: 150,
+                  height: 150,
+                  flex: 1,
+                  flexDirection: 'row',
+                  justifyContent: 'flex-end'
+                }}
+                imageStyle={{
+                  borderRadius: 15
+                }}
+              ><View style={{margin: 5}}>
+                <BookmarkButton itemID={item.ListingID} />
               </View>
-            </View>
-          </TouchableOpacity>);
+            </ImageBackground>
+            <TouchableOpacity
+              style={{padding: 5, alignItems: 'center', flexDirection: 'row'}}
+              onPress={() => navigation.navigate('ListingDetails', item)}
+            >
+              <Text>${item.Price} </Text>
+              <Text>{item.Item}</Text>
+            </TouchableOpacity>
+          </View>);
     });
 
     return (
-    <View style={{
+    <SafeAreaView style={{
       alignItems: 'center',
       justifyContent: 'space-around',
       flexWrap: 'wrap',
-      flexDirection: 'row'
+      flexDirection: 'row',
+      marginBottom: 45
     }}>
       {listItems.length > 0 ? listItems : <Text>No items</Text>}
-    </View>
+    </SafeAreaView>
     );
 }
