@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from 'react';
-import {SafeAreaView, Text, View, FlatList, Image, StyleSheet, Modal, TouchableOpacity} from 'react-native';
+import {Text, View, FlatList, Image, StyleSheet, Modal, TouchableOpacity} from 'react-native';
+import {SafeAreaView} from 'react-native-safe-area-context';
 import storage from '@react-native-firebase/storage';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
@@ -90,8 +91,13 @@ export default function ProfileScreen({navigation}) {
                 }}>
                 {user.Username}
               </Text>
+              <Rating
+                  startingValue={user.SellerRating[1]}
+                  readonly={true}
+                  imageSize={25}
+                  ratingCount={5}
+              />
               {UserInfoText(require('../assets/History.png'), user.Phone)}
-              {UserInfoText(require('../assets/History.png'), user.Rating)}
             </View>
           </View>
         )}>
@@ -225,20 +231,6 @@ export default function ProfileScreen({navigation}) {
           keyExtractor={(name) => name}
         />
       </CollapsibleHeaderTabView>
-      <Modal
-        transparent={true}
-        visible={show}
-      >
-        <View style={styles.modalOuterContainer}>
-            <View style={styles.modalInnerContainer}>
-                <Text style={styles.title}> Seller Review </Text>
-                <Rating showRating imageSize={40} readonly startingValue={currRating} />
-                <TouchableOpacity style={styles.button} onPress={()=>{setShow(false)}}>
-                    <Text>{"Close"}</Text>
-                </TouchableOpacity>
-            </View>
-        </View>
-      </Modal>
     </SafeAreaView>
   );
 }

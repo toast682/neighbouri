@@ -18,7 +18,7 @@ export default function SellerInfoCard(sellerID) {
     async function getSeller() {
         await firestore()
           .collection('Users')
-          .where("uid", "==", sellerID.SellerID)
+          .where('uid', '==', sellerID.SellerID)
           .get()
           .then((seller) => {
               if (!seller.empty) {
@@ -40,7 +40,7 @@ export default function SellerInfoCard(sellerID) {
 
     return (
         <TouchableOpacity
-            onPress={() => { console.log('navigate.navigate to seller profile') }}
+            onPress={() => {console.log('navigate.navigate to seller profile') }}
             style={{ alignSelf: 'stretch' }}>
             <View style={{
                 alignSelf: 'stretch',
@@ -70,6 +70,7 @@ export default function SellerInfoCard(sellerID) {
                         minHeight: 70
                         }}>
                         <Text>{seller && seller.Username}</Text>
+                        <Text>{seller && seller.Email}</Text>
                         <View style={{
                             flex: 1,
                             alignItems: 'center',
