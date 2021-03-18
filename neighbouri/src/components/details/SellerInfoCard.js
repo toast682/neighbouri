@@ -7,7 +7,7 @@ import { Rating } from 'react-native-ratings';
 export default function SellerInfoCard(sellerID) {
     const [seller, setSeller] = useState(null);
     const [avatarURI, setAvatarURI] = useState('');
-
+    const [rating, setRating] = useState(0);
     useEffect(() => {
         getSeller();
       }, []);
@@ -15,12 +15,13 @@ export default function SellerInfoCard(sellerID) {
     async function getSeller() {
         await firestore()
           .collection('Users')
-          .where("uid", "==", sellerID.SellerID)
+          .where('uid', '==', sellerID.SellerID)
           .get()
           .then((seller) => {
               if (!seller.empty) {
                 const sellerData = seller.docs[0].data();
                 setSeller(sellerData);
+                setRating(sellerData.SellerRating[1]);
                 storage().ref(sellerData.IconURI).getDownloadURL().then((reference => {
                     setAvatarURI(reference);
                 }));
@@ -33,7 +34,7 @@ export default function SellerInfoCard(sellerID) {
 
     return (
         <TouchableOpacity
-            onPress={() => { console.log('navigate.navigate to seller profile') }}
+            onPress={() => {console.log('navigate.navigate to seller profile') }}
             style={{ alignSelf: 'stretch' }}>
             <View style={{
                 alignSelf: 'stretch',
@@ -63,7 +64,7 @@ export default function SellerInfoCard(sellerID) {
                         minHeight: 70
                         }}>
                         <Text>{seller && seller.Username}</Text>
-                        <Text>{seller && seller.email}</Text>
+                        <Text>{seller && seller.Email}</Text>
                     </View>
                     <View style={{
                         flex: 2,
@@ -71,7 +72,7 @@ export default function SellerInfoCard(sellerID) {
                         minHeight: 70
                         }}>
                         <Rating
-                            startingValue={!!seller ? seller.SellerRating : 0}
+                            startingValue={rating}
                             readonly={true}
                             imageSize={25}
                             ratingCount={5}
