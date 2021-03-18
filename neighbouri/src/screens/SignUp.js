@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Button, Text, TextInput, TouchableOpacity, StyleSheet, View } from 'react-native';
+import { Button, Text, TextInput, TouchableOpacity, StyleSheet, View, Platform } from 'react-native';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 
@@ -114,7 +114,7 @@ export default function SignUpScreen({ navigation }) {
     return (
         <View style={styles.formContainer}>
             <View style={styles.centeredForm}>
-                <View style={{backgroundColor: 'green', width: 100, height: 100, alignSelf: 'center', marginTop: 100, borderRadius: 100,}}></View>
+                <View style={{backgroundColor: 'green', width: 100, height: 100, alignSelf: 'center', marginTop: Platform.OS === "android" ? 30 : 100, borderRadius: 100,}}></View>
                 <Text style={styles.titleText}>Sign Up</Text>
                 <TextInput
                     placeholder="Full Name"
@@ -146,7 +146,7 @@ export default function SignUpScreen({ navigation }) {
                     placeholderTextColor="grey"
                 />
                 <View style={styles.signUpButton} >
-                    <Button title="SIGN UP" color='white' onPress={() => {
+                    <Button title="SIGN UP" color={Platform.OS === "android" ? '#48ca36' : 'white'} onPress={() => {
                                     signUp(username, email, fullName, password, setErrorMessage)
                                     .then(() => {
                                         // do nothing

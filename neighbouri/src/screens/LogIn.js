@@ -65,7 +65,7 @@ export default function LoginScreen({navigation}) {
       <View style={styles.signUpButton}>
         <Button
           title="LOGIN"
-          color="white"
+          color={Platform.OS === "android" ? '#48ca36' : 'white'}
           onPress={() => {
             logIn(email, password, setErrorMessage);
           }}

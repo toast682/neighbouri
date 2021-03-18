@@ -1,6 +1,5 @@
 import React, {useEffect, useState} from 'react';
 import {Text, View, FlatList, Image, StyleSheet, Modal, TouchableOpacity} from 'react-native';
-import {SafeAreaView} from 'react-native-safe-area-context';
 import storage from '@react-native-firebase/storage';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
@@ -53,8 +52,8 @@ export default function ProfileScreen({navigation}) {
   }
 
   return (
-    <SafeAreaView
-      style={{flex: 1, alignItems: 'center', backgroundColor: 'white'}}>
+    <View
+      style={{height: '100%', backgroundColor: 'white', flex: 1, paddingTop: 30 }}>
       {Header(
         <View style={{flex: 1}} />,
         <View style={{flex: 5}} />,
@@ -230,8 +229,8 @@ export default function ProfileScreen({navigation}) {
           style={{width: '100%'}}
           keyExtractor={(name) => name}
         />
-      </CollapsibleHeaderTabView>
-    </SafeAreaView>
+      </CollapsibleHeaderTabView>  
+    </View>
   );
 }
 
