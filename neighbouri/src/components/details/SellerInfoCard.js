@@ -3,11 +3,14 @@ import { Image, View, Text, TouchableOpacity } from 'react-native';
 import firestore from '@react-native-firebase/firestore';
 import storage from '@react-native-firebase/storage';
 import { Rating } from 'react-native-ratings';
+import {Icon} from 'react-native-elements';
 
 export default function SellerInfoCard(sellerID) {
     const [seller, setSeller] = useState(null);
     const [avatarURI, setAvatarURI] = useState('');
-    const [rating, setRating] = useState(0);
+    const [sellerRating, setSellerRating] = useState(0);
+    const [sellerNumberOfRatings, setSellerNumberOfRatings] = useState(0);
+
     useEffect(() => {
         getSeller();
       }, []);
@@ -21,7 +24,10 @@ export default function SellerInfoCard(sellerID) {
               if (!seller.empty) {
                 const sellerData = seller.docs[0].data();
                 setSeller(sellerData);
-                setRating(sellerData.SellerRating[1]);
+                if (!!sellerData  && !!sellerData.SellerRating) {
+                    setSellerRating(sellerData.SellerRating[1]);
+                    setSellerNumberOfRatings(sellerData.SellerRating[0]);
+                }
                 storage().ref(sellerData.IconURI).getDownloadURL().then((reference => {
                     setAvatarURI(reference);
                 }));
@@ -65,18 +71,36 @@ export default function SellerInfoCard(sellerID) {
                         }}>
                         <Text>{seller && seller.Username}</Text>
                         <Text>{seller && seller.Email}</Text>
+                        <View style={{
+                            flex: 1,
+                            alignItems: 'center',
+                            flexDirection: 'row'
+                        }}>
+                        <View style={{
+                            marginRight: 4
+                        }}>
+                        <Icon
+                            name="envelope-o"
+                            type="font-awesome"
+                            size={15}
+                        />
+                        </View>
+                        <Text>{seller && seller.email}</Text>
+                        </View>
                     </View>
                     <View style={{
                         flex: 2,
-                        alignItems: 'center',
+                        paddingTop: 10,
+                        flexDirection: 'row',
                         minHeight: 70
                         }}>
                         <Rating
-                            startingValue={rating}
+                            startingValue={sellerRating}
                             readonly={true}
-                            imageSize={25}
+                            imageSize={20}
                             ratingCount={5}
                         />
+                        <Text> ({sellerNumberOfRatings})</Text>
                     </View>
                 </View>
             </View>
