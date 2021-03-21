@@ -1,18 +1,23 @@
 import React, {useEffect, useState} from 'react';
-import {Text, View, FlatList, Image, StyleSheet, Modal, TouchableOpacity} from 'react-native';
+import {
+  Text,
+  View,
+  FlatList,
+  Image,
+  StyleSheet,
+  Modal,
+  TouchableOpacity,
+} from 'react-native';
 import storage from '@react-native-firebase/storage';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 import {HPageViewHoc} from 'react-native-head-tab-view';
 import {CollapsibleHeaderTabView} from 'react-native-scrollable-tab-view-collapsible-header';
-import HistoryButton from '../components/HistoryButton';
 import Header from '../components/navigation/Header';
 import SettingButton from '../components/SettingButton';
-import GeoButton from '../components/GeoButton';
-import ProfileIconButton from '../components/ProfileIconButton';
 import UserInfoText from '../components/profile/UserInfoText';
-import { Rating } from 'react-native-ratings';
-
+import {Rating} from 'react-native-ratings';
+import moment from 'moment'
 
 export default function ProfileScreen({navigation}) {
   const HFlatList = HPageViewHoc(FlatList);
@@ -21,11 +26,54 @@ export default function ProfileScreen({navigation}) {
   const [user, setUser] = useState();
   const [show, setShow] = useState(false);
   const [currRating, setCurrRating] = useState(0);
-
+  const [listings, setListings] = useState([]);
+  const [purchases, setPurchases] = useState([]);
 
   useEffect(() => {
     getData();
+    getListingData();
+    getPurchaseData();
   }, []);
+
+  async function getListingData() {
+    setListings([]);
+    await firestore()
+      .collection('Listings')
+      .where('SellerID', '==', auth().currentUser.uid)
+      .orderBy('PostedDate', 'desc')
+      .get()
+      .then((listingDocs) => {
+        listingDocs.forEach((doc) => {
+          buildObject(doc);
+        });
+      });
+  }
+
+  async function getPurchaseData() {
+    setPurchases([]);
+    await firestore()
+      .collection('Transactions')
+      .where('BuyerID', '==', auth().currentUser.uid)
+      .orderBy('Date', 'desc')
+      .get()
+      .then((purchaseDocs) => {
+        purchaseDocs.forEach((doc) => {
+          buildPurchase(doc);
+        });
+      });
+  }
+
+  async function buildObject(doc) {
+    const reference = await storage().ref(doc.data().ImageURI).getDownloadURL();
+    doc.data().photo = {uri: reference};
+    setListings((prev) => [...prev, doc.data()]);
+  }
+
+  async function buildPurchase(doc) {
+    const reference = await storage().ref(doc.data().ImageURI).getDownloadURL();
+    doc.data().photo = {uri: reference};
+    setPurchases((prev) => [...prev, doc.data()]);
+  }
 
   function showRating(rating) {
     setCurrRating(rating);
@@ -34,8 +82,12 @@ export default function ProfileScreen({navigation}) {
 
   async function getData() {
     const reference = await storage()
-      .ref('ProfilePicture/Apple.jpg')
-      .getDownloadURL();
+      .ref('ProfilePicture')
+      .child(auth().currentUser.uid + '.JPG')
+      .getDownloadURL()
+      .catch(() => {
+        storage().ref('ProfilePicture').child('Apple.jpg').getDownloadURL();
+      });
     setPhoto(reference);
 
     await firestore()
@@ -53,7 +105,12 @@ export default function ProfileScreen({navigation}) {
 
   return (
     <View
-      style={{height: '100%', backgroundColor: 'white', flex: 1, paddingTop: 30 }}>
+      style={{
+        height: '100%',
+        backgroundColor: 'white',
+        flex: 1,
+        paddingTop: 30,
+      }}>
       {Header(
         <View style={{flex: 1}} />,
         <View style={{flex: 5}} />,
@@ -61,6 +118,8 @@ export default function ProfileScreen({navigation}) {
       )}
       <CollapsibleHeaderTabView
         makeHeaderHeight={() => 120}
+        tabBarActiveTextColor='#48CA36'
+        tabBarUnderlineStyle={{backgroundColor: '#48CA36'}}
         renderScrollHeader={() => (
           <View
             style={{
@@ -91,23 +150,24 @@ export default function ProfileScreen({navigation}) {
                 {user.Username}
               </Text>
               <Rating
-                  startingValue={user.SellerRating[1]}
-                  readonly={true}
-                  imageSize={25}
-                  ratingCount={5}
+                style={{marginBottom: 10, alignSelf: 'flex-start'}}
+                startingValue={user.SellerRating[1]}
+                readonly={true}
+                imageSize={25}
+                ratingCount={5}
               />
-              {UserInfoText(require('../assets/History.png'), user.Phone)}
+              {UserInfoText(require('../assets/Phone.png'), user.Phone)}
             </View>
           </View>
         )}>
         <HFlatList
           index={0}
           tabLabel={'Listings'}
-          data={['Banana', 'Pizza', 'Apples', 'Milk', 'Ramen']}
+          data={[...new Set(listings)]}
           renderItem={({item}) => (
             <View
               style={{
-                backgroundColor: 'grey',
+                backgroundColor: '#faf9f9',
                 margin: 10,
                 height: 150,
                 borderRadius: 8,
@@ -119,13 +179,15 @@ export default function ProfileScreen({navigation}) {
                   justifyContent: 'space-between',
                   margin: 10,
                 }}>
-                <Text>Purchased on date</Text>
-                <Text>View Receipt</Text>
+                <Text>Listed on {moment(item.PostedDate.toDate(), 'YYYYMMDD').format('ll')}</Text>
+                <Text style={{color: 'brown'}} onPress={() => {
+                  console.log('edit')
+                }}>Edit Post</Text>
               </View>
               <View style={{flex: 3, flexDirection: 'row'}}>
                 <View>
                   <Image
-                    source={{uri: photo}}
+                    source={{uri: item.photo.uri}}
                     style={{
                       width: 80,
                       height: 80,
@@ -134,8 +196,13 @@ export default function ProfileScreen({navigation}) {
                     }}></Image>
                 </View>
                 <View>
-                  <Text>{item}</Text>
-                  <Text onPress={()=>{showRating(3)}}>Review Seller</Text>
+                  <Text style={{fontWeight: 'bold'}}>{item.Item}</Text>
+                  <Text>
+                    ${item.Price}
+                  </Text>
+                  <Text>
+                    {item.Description}
+                  </Text>
                 </View>
               </View>
             </View>
@@ -145,12 +212,12 @@ export default function ProfileScreen({navigation}) {
         />
         <HFlatList
           index={1}
-          data={['B', 'P', 'A']}
+          data={[...new Set(purchases)]}
           tabLabel={'Purchases'}
           renderItem={({item}) => (
             <View
               style={{
-                backgroundColor: 'grey',
+                backgroundColor: '#faf9f9',
                 margin: 10,
                 height: 150,
                 borderRadius: 8,
@@ -162,23 +229,26 @@ export default function ProfileScreen({navigation}) {
                   justifyContent: 'space-between',
                   margin: 10,
                 }}>
-                <Text>Purchased on date</Text>
-                <Text>View Receipt</Text>
+                <Text>Purchased on {moment(item.Date.toDate(), 'YYYYMMDD').format('ll')}</Text>
+                <Text style={{color: 'brown'}} onPress={() => {
+                  console.log('receipt')
+                }}>View Receipt</Text>
               </View>
               <View style={{flex: 3, flexDirection: 'row'}}>
                 <View>
                   <Image
-                    source={{uri: photo}}
+                    source={{uri: item.photo.uri}}
                     style={{
                       width: 80,
                       height: 80,
                       borderRadius: 8,
                       marginHorizontal: 10,
-                    }}></Image>
+                    }}/>
                 </View>
                 <View>
-                  <Text>{item}</Text>
-                  <Text>Review Seller</Text>
+                  <Text style={{fontWeight: 'bold'}}>{item.Item} - ${item.Price}</Text>
+                  <Text>{item.SellerName}</Text>
+                  <Text style={{color: '#F9A528', textDecorationLine: 'underline'}}>Review Seller</Text>
                 </View>
               </View>
             </View>
@@ -186,54 +256,10 @@ export default function ProfileScreen({navigation}) {
           style={{width: '100%'}}
           keyExtractor={(name) => name}
         />
-        <HFlatList
-          index={2}
-          data={['B', 'P', 'A']}
-          tabLabel={'Reviews'}
-          renderItem={({item}) => (
-            <View
-              style={{
-                backgroundColor: 'grey',
-                margin: 10,
-                height: 150,
-                borderRadius: 8,
-              }}>
-              <View
-                style={{
-                  flex: 1,
-                  flexDirection: 'row',
-                  justifyContent: 'space-between',
-                  margin: 10,
-                }}>
-                <Text>Purchased on date</Text>
-                <Text>View Receipt</Text>
-              </View>
-              <View style={{flex: 3, flexDirection: 'row'}}>
-                <View>
-                  <Image
-                    source={{uri: photo}}
-                    style={{
-                      width: 80,
-                      height: 80,
-                      borderRadius: 8,
-                      marginHorizontal: 10,
-                    }}></Image>
-                </View>
-                <View>
-                  <Text>{item}</Text>
-                  <Text>Review Seller</Text>
-                </View>
-              </View>
-            </View>
-          )}
-          style={{width: '100%'}}
-          keyExtractor={(name) => name}
-        />
-      </CollapsibleHeaderTabView>  
+      </CollapsibleHeaderTabView>
     </View>
   );
 }
-
 
 const styles = StyleSheet.create({
   container: {

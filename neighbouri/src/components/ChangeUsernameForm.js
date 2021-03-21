@@ -13,11 +13,11 @@ export default function ChangeUsernameForm() {
     }
 
     return (
-        <View >
+        <View style={{width: '100%'}}>
             <Text > Change Username</Text>
             <TextInput
-                placeholder="current username"
-                placeholderTextColor = "#000000"
+                placeholder="New Username"
+                placeholderTextColor = "gray"
                 underlineColorAndroid = "transparent"
                 style={styles.input}
 
@@ -25,8 +25,8 @@ export default function ChangeUsernameForm() {
             />
             <Text > Change Bio </Text>
             <TextInput
-                placeholder="current bio"
-                placeholderTextColor = "#000000"
+                placeholder="New Bio"
+                placeholderTextColor = "gray"
                 underlineColorAndroid = "transparent"
                 style={styles.input}
 
@@ -48,7 +48,7 @@ const styles = StyleSheet.create({
        height: 40,
        borderColor: '#000000',
        borderWidth: 1,
-       width: 200,
+       paddingLeft: 5
     }
 
  })

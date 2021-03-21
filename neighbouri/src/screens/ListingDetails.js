@@ -112,7 +112,7 @@ export default function ListingDetailsScreen({route, navigation}) {
               <Text style={{fontSize: 16}}>{item.ExpiryDate.Month} {item.ExpiryDate.Day}, {item.ExpiryDate.Year}</Text>
             </View>}
             <Text style={{fontSize: 16, marginTop: 10, marginBottom: 20}}>{item.Description}</Text>
-            {!!item.PickupLocation && !!item.PickupTime &&
+            {!!item.PickupLocation && !!item.PickupInstruction &&
               <View
                 style={{
                   alignItems: 'center',
@@ -127,9 +127,9 @@ export default function ListingDetailsScreen({route, navigation}) {
               <Text style={{fontSize: 16, fontWeight: 'bold'}}>Pickup Location: </Text>
               <Text style={{fontSize: 16}}>{item.PickupLocation}</Text>
             </View>}
-            {!!item.PickupTime && <View style={{flexDirection: 'row', marginBottom: 10}}>
-              <Text style={{fontSize: 16, fontWeight: 'bold'}}>Pickup Time: </Text>
-              <Text style={{fontSize: 16}}>{item.PickupTime}</Text>
+            {!!item.PickupInstruction && <View style={{flexDirection: 'row', marginBottom: 10}}>
+              <Text style={{fontSize: 16, fontWeight: 'bold'}}>Pickup Instruction: </Text>
+              <Text style={{fontSize: 16}}>{item.PickupInstruction}</Text>
             </View>}
           </View>
         </View>

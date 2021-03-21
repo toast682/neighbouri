@@ -115,6 +115,7 @@ export default function HomeScreen({navigation}) {
     setFullListings((prev) => [...prev, doc.data()]);
     setListings((prev) => [...prev, doc.data()]);
   }
+  
   //TODO: make adding a posting require having a name, description, etc.
   function searchList(keyword) {
     setSearch(keyword);
