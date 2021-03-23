@@ -16,7 +16,7 @@ import {CollapsibleHeaderTabView} from 'react-native-scrollable-tab-view-collaps
 import Header from '../components/navigation/Header';
 import SettingButton from '../components/SettingButton';
 import UserInfoText from '../components/profile/UserInfoText';
-import {Rating} from 'react-native-ratings';
+import {Rating, AirbnbRating} from 'react-native-ratings';
 import moment from 'moment'
 
 export default function ProfileScreen({navigation}) {
@@ -25,15 +25,30 @@ export default function ProfileScreen({navigation}) {
   const [photo, setPhoto] = useState();
   const [user, setUser] = useState();
   const [show, setShow] = useState(false);
-  const [currRating, setCurrRating] = useState(0);
   const [listings, setListings] = useState([]);
   const [purchases, setPurchases] = useState([]);
+  const [sellerRating, setSellerRating] = useState(0);
+  const [sellerNumberOfRatings, setSellerNumberOfRatings] = useState(0);
+  const [newRating, setNewRating] = useState(0);
+  const [documentId, setDocumentId] = useState('');
 
   useEffect(() => {
     getData();
     getListingData();
     getPurchaseData();
   }, []);
+
+   async function updateRating() {
+     await firestore()
+       .collection('Users')
+       .doc(documentId)
+       .update({
+          SellerRating:[sellerNumberOfRatings+1,(sellerRating*sellerNumberOfRatings+newRating)/(sellerNumberOfRatings+1)]
+       })
+       .catch((e) => {
+          console.log(e);
+       });
+   }
 
   async function getListingData() {
     setListings([]);
@@ -96,6 +111,9 @@ export default function ProfileScreen({navigation}) {
       .get()
       .then((userDoc) => {
         setUser(userDoc.data());
+        setDocumentId(userDoc.id);
+        setSellerRating(user.SellerRating[1]);
+        setSellerNumberOfRatings(user.SellerRating[0]);
       });
   }
 
@@ -248,7 +266,9 @@ export default function ProfileScreen({navigation}) {
                 <View>
                   <Text style={{fontWeight: 'bold'}}>{item.Item} - ${item.Price}</Text>
                   <Text>{item.SellerName}</Text>
+                  <TouchableOpacity onPress={() => {setShow(true)}}>
                   <Text style={{color: '#F9A528', textDecorationLine: 'underline'}}>Review Seller</Text>
+                  </TouchableOpacity>
                 </View>
               </View>
             </View>
@@ -257,6 +277,30 @@ export default function ProfileScreen({navigation}) {
           keyExtractor={(name) => name}
         />
       </CollapsibleHeaderTabView>
+
+       <Modal transparent={true} visible={show}>
+           <View style={styles.modalOuterContainer}>
+              <View style={styles.modalInnerContainer}>
+                 <Text style={styles.title}> Rate the seller </Text>
+                 <AirbnbRating showRating
+                    readonly={false}
+                    onFinishRating={setNewRating}
+                    reviews={["Terrible", "Bad", "OK", "Good","Amazing"]}
+                    imageSize={40}/>
+                 <View style={{ flexDirection:"row" }}>
+                    <TouchableOpacity style={styles.modalButton} onPress={()=>{setShow(false);}}>
+                       <Text style={styles.buttonText}>{"CLOSE"}</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.modalButton} onPress={()=>{
+                       setShow(false);
+                       updateRating();
+                      }}>
+                        <Text style={styles.buttonText}>{"SUBMIT"}</Text>
+                    </TouchableOpacity>
+                 </View>
+              </View>
+           </View>
+        </Modal>
     </View>
   );
 }
@@ -284,7 +328,10 @@ const styles = StyleSheet.create({
   modalInnerContainer: {
     flex: 1,
     backgroundColor: '#ffffff',
+    justifyContent: 'center',
     margin: 50,
+    marginTop: 240,
+    marginBottom: 240,
     padding: 40,
     borderRadius: 10,
     alignItems: 'center',
@@ -294,6 +341,22 @@ const styles = StyleSheet.create({
     color: '#3dafe0',
     margin: 50,
   },
+
+  modalButton: {
+    backgroundColor: "#48CA36",
+    borderRadius: 20,
+    paddingVertical: 7,
+    paddingHorizontal: 7,
+    margin:30,
+    fontSize: 20,
+  },
+
+  buttonText: {
+    fontSize: 18,
+    color: "#fff",
+    alignSelf: "center",
+  },
+
   input: {
     margin: 10,
     height: 40,
