@@ -11,7 +11,7 @@ import {
 import storage from '@react-native-firebase/storage';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
-import {HPageViewHoc} from 'react-native-head-tab-view';
+import {HFlatList} from 'react-native-head-tab-view';
 import {CollapsibleHeaderTabView} from 'react-native-scrollable-tab-view-collapsible-header';
 import Header from '../components/navigation/Header';
 import SettingButton from '../components/SettingButton';
@@ -20,8 +20,6 @@ import {Rating} from 'react-native-ratings';
 import moment from 'moment'
 
 export default function ProfileScreen({navigation}) {
-  const HFlatList = HPageViewHoc(FlatList);
-
   const [photo, setPhoto] = useState();
   const [user, setUser] = useState();
   const [show, setShow] = useState(false);
@@ -117,7 +115,6 @@ export default function ProfileScreen({navigation}) {
         SettingButton(navigation),
       )}
       <CollapsibleHeaderTabView
-        makeHeaderHeight={() => 120}
         tabBarActiveTextColor='#48CA36'
         tabBarUnderlineStyle={{backgroundColor: '#48CA36'}}
         renderScrollHeader={() => (
@@ -163,7 +160,7 @@ export default function ProfileScreen({navigation}) {
         <HFlatList
           index={0}
           tabLabel={'Listings'}
-          data={[...new Set(listings)]}
+          data={listings}
           renderItem={({item}) => (
             <View
               style={{
@@ -208,11 +205,11 @@ export default function ProfileScreen({navigation}) {
             </View>
           )}
           style={{width: '100%'}}
-          keyExtractor={(name) => name}
         />
+        
         <HFlatList
           index={1}
-          data={[...new Set(purchases)]}
+          data={purchases}
           tabLabel={'Purchases'}
           renderItem={({item}) => (
             <View
@@ -254,7 +251,6 @@ export default function ProfileScreen({navigation}) {
             </View>
           )}
           style={{width: '100%'}}
-          keyExtractor={(name) => name}
         />
       </CollapsibleHeaderTabView>
     </View>
