@@ -27,7 +27,7 @@ export default function SellerInfoCard(sellerID) {
             SellerRating:[sellerNumberOfRatings+1,(sellerRating*sellerNumberOfRatings+newRating)/(sellerNumberOfRatings+1)]
             })
           .catch((e) => {
-                  console.log(e);
+             console.log(e);
           });
     }
 
@@ -186,8 +186,8 @@ export default function SellerInfoCard(sellerID) {
       backgroundColor: '#ffffff',
       justifyContent: 'center',
       margin: 50,
-      marginTop: 240,
-      marginBottom: 240,
+      marginTop: '35%',
+      marginBottom: '35%',
       padding: 40,
       borderRadius: 10,
       alignItems: 'center',

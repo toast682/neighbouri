@@ -50,6 +50,24 @@ export default function ProfileScreen({navigation}) {
        });
    }
 
+   async function rateSeller(sellerID) {
+     setShow(true);
+     await firestore()
+      .collection('Users')
+      .where('uid', '==', sellerID)
+      .get()
+      .then((seller) => {
+         const sellerData = seller.docs[0].data();
+         setDocumentId(seller.docs[0].id);
+         setSellerRating(sellerData.SellerRating[1]);
+         setSellerNumberOfRatings(sellerData.SellerRating[0]);
+         updateRating();
+      })
+      .catch((error) => {
+         console.log(error);
+      });
+   }
+
   async function getListingData() {
     setListings([]);
     await firestore()
@@ -266,7 +284,7 @@ export default function ProfileScreen({navigation}) {
                 <View>
                   <Text style={{fontWeight: 'bold'}}>{item.Item} - ${item.Price}</Text>
                   <Text>{item.SellerName}</Text>
-                  <TouchableOpacity onPress={() => {setShow(true)}}>
+                  <TouchableOpacity onPress={() => {rateSeller(item.SellerID)}}>
                   <Text style={{color: '#F9A528', textDecorationLine: 'underline'}}>Review Seller</Text>
                   </TouchableOpacity>
                 </View>
@@ -281,7 +299,7 @@ export default function ProfileScreen({navigation}) {
        <Modal transparent={true} visible={show}>
            <View style={styles.modalOuterContainer}>
               <View style={styles.modalInnerContainer}>
-                 <Text style={styles.title}> Rate the seller </Text>
+                 <Text style={styles.modalTitle}> Rate the seller </Text>
                  <AirbnbRating showRating
                     readonly={false}
                     onFinishRating={setNewRating}
@@ -320,6 +338,14 @@ const styles = StyleSheet.create({
     marginBottom: 70,
   },
 
+  modalTitle: {
+    color: '#48CA36',
+    fontSize: 30,
+    marginBottom: 20,
+    marginTop: 20,
+    textAlign:'center',
+  },
+
   modalOuterContainer: {
     flex: 1,
     backgroundColor: '#000000aa',
@@ -330,8 +356,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#ffffff',
     justifyContent: 'center',
     margin: 50,
-    marginTop: 240,
-    marginBottom: 240,
+    marginTop: '35%',
+    marginBottom: '35%',
     padding: 40,
     borderRadius: 10,
     alignItems: 'center',
