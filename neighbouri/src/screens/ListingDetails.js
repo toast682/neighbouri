@@ -140,26 +140,26 @@ export default function ListingDetailsScreen({route, navigation}) {
                 fontSize: 25,
                 fontWeight: 'bold',
                 color: 'black',
-                textAlign: 'center'
+                textAlign: 'center',
               }}>
               {item.Item}
             </Text>
-            <View style={{flex: 1}} >
-            {isBookmarked ? (
-              <Icon
-                name="bookmark"
-                type="font-awesome"
-                color="gold"
-                onPress={() => removeFromBookmarks()}
-              />
-            ) : (
-              <Icon
-                name="bookmark-o"
-                type="font-awesome"
-                color="gold"
-                onPress={() => addToBookmarks()}
-              />
-            )}
+            <View style={{flex: 1}}>
+              {isBookmarked ? (
+                <Icon
+                  name="bookmark"
+                  type="font-awesome"
+                  color="gold"
+                  onPress={() => removeFromBookmarks()}
+                />
+              ) : (
+                <Icon
+                  name="bookmark-o"
+                  type="font-awesome"
+                  color="gold"
+                  onPress={() => addToBookmarks()}
+                />
+              )}
             </View>
           </View>
           <View
@@ -179,7 +179,10 @@ export default function ListingDetailsScreen({route, navigation}) {
           <Button
             title="Add to Cart"
             onPress={() => {
-              console.log('add to cart');
+              navigation.navigate('Checkout', {
+                item: item,
+                currentUserId: currentUserId,
+              });
             }}
           />
         </View>

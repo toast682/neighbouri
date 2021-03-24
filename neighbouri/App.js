@@ -17,6 +17,7 @@ import ProfileInfoScreen from './src/screens/ProfileInfo';
 import CreatePostingScreen from './src/screens/CreatePosting';
 import ListingDetailsScreen from './src/screens/ListingDetails';
 import CardFormScreen from './src/screens/CardFormScreen';
+import Checkout from './src/screens/Checkout';
 
 enableScreens();
 
@@ -34,6 +35,8 @@ function Home() {
         name="ListingDetails"
         component={ListingDetailsScreen}
       />
+      <HomeStack.Screen name="Checkout" component={Checkout} />
+      <HomeStack.Screen name="CardFormScreen" component={CardFormScreen} />
     </HomeStack.Navigator>
   );
 }
@@ -110,7 +113,11 @@ export default function App() {
           initialRouteName="SignUpScreen"
           screenOptions={{headerShown: false}}>
           <SignUpLoginStack.Screen name="SignUp" component={SignUpScreen} />
-          <SignUpLoginStack.Screen name="LogIn" component={LoginScreen} />
+          <SignUpLoginStack.Screen
+            name="LogIn"
+            component={LoginScreen}
+            options={{title: 'Checkout'}}
+          />
         </SignUpLoginStack.Navigator>
       </NavigationContainer>
     );
