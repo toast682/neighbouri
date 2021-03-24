@@ -14,6 +14,7 @@ import HistoryScreen from './src/screens/History';
 import LoginScreen from './src/screens/LogIn';
 import SignUpScreen from './src/screens/SignUp';
 import HomeScreen from './src/screens/Home';
+import Saved from './src/screens/Saved';
 import ProfileInfoScreen from './src/screens/ProfileInfo';
 import CreatePostingScreen from './src/screens/CreatePosting';
 import ListingDetailsScreen from './src/screens/ListingDetails';
@@ -35,11 +36,18 @@ function Home() {
   )
 }
 
+const SavedStack = createStackNavigator();
+
 function SavedScreen() {
   return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Text>Saved!</Text>
-    </View>
+        <SavedStack.Navigator
+        initialRouteName='Saved'
+        screenOptions={{
+          headerShown: false,
+        }}>
+          <SavedStack.Screen name='Saved' component={Saved} />
+          <SavedStack.Screen name='ListingDetails' component={ListingDetailsScreen} />
+        </SavedStack.Navigator>
   );
 }
 

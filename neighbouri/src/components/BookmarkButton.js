@@ -3,46 +3,28 @@ import {
   View
 } from 'react-native';
 import {Icon} from 'react-native-elements';
-import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
+import { useIsFocused } from "@react-navigation/native";
 
 const usersCollection = firestore().collection('Users');
 
-export default function BookmarkButton({itemID}) {
+export default function BookmarkButton(props) {
+  const {itemID, bookmarks, userDocumentId} = props;
   const [isBookmarked, setIsBookmarked] = useState(false);
-  const [userBookmarks, setUserBookmarks] = useState([]);
-  const [userDocumentId, setUserDocumentId] = useState('');
-  const currentUser = auth().currentUser;
-  const currentUserId = currentUser.uid;
+  const isFocused = useIsFocused();
 
   useEffect(() => {
-    getCurrentUser();
-  }, []);
-
-  async function getCurrentUser() {
-    await firestore()
-      .collection('Users')
-      .where('uid', '==', currentUserId)
-      .get()
-      .then((userDocs) => {
-        setUserDocumentId(userDocs.docs[0].id);
-        const bookmarks =
-          userDocs.docs[0].data() && userDocs.docs[0].data().bookmarks;
-        setUserBookmarks(bookmarks);
-        if (bookmarks.includes(itemID)) {
-          setIsBookmarked(true);
-        }
-      })
-      .catch((e) => {
-        console.log('There was an error getting user: ', e);
-      });
-  }
+    if (bookmarks.includes(itemID)) {
+      setIsBookmarked(true);
+    }
+  }, [props, isFocused]);
 
   async function addToBookmarks() {
-    await usersCollection
+    if (!bookmarks.includes(itemID)) {
+      await usersCollection
       .doc(userDocumentId)
       .update({
-        bookmarks: [...userBookmarks, itemID],
+        bookmarks: [...bookmarks, itemID],
       })
       .then(() => {
         setIsBookmarked(true);
@@ -50,10 +32,11 @@ export default function BookmarkButton({itemID}) {
       .catch((e) => {
         console.log('There was an error adding bookmark added to user: ', e);
       });
+    }
   }
 
   async function removeFromBookmarks() {
-    const rmBookmarks = userBookmarks.filter((b) => b !== itemID);
+    const rmBookmarks = bookmarks.filter((b) => b !== itemID);
     await usersCollection
       .doc(userDocumentId)
       .update({
