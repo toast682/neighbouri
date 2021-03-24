@@ -10,6 +10,7 @@ import ItemTile from '../components/ItemTile'
 import storage from '@react-native-firebase/storage';
 import auth from '@react-native-firebase/auth';
 import { useIsFocused } from "@react-navigation/native";
+import MessageIconButton from '../components/MessageIconButton';
 
 export default function SavedScreen(props) {
   const [listings, setListings] = useState([]);
@@ -70,10 +71,17 @@ export default function SavedScreen(props) {
         data={[...new Set(listings)]}
         ListHeaderComponent={
           <View style={{width:'100%'}}>
+            <View
+              style={{
+                flex: 1,
+                margin: 10,
+                flexDirection: 'row-reverse'
+              }}>
+              <MessageIconButton navigation={navigation}/>
+            </View>
             <Text style={{
                 color: '#48CA36',
                 fontSize: 24,
-                marginTop: 70,
                 alignSelf: 'center', 
                 marginBottom: 10
             }}>MY SAVED</Text>
@@ -86,9 +94,10 @@ export default function SavedScreen(props) {
                 }}/>
           </View>
         }
-        renderItem={({item}) => (
+        renderItem={({item, index}) => (
           <ItemTile
             item={item}
+            key={index}
             navigation={navigation}
             bookmarks={userBookmarks}
             userDocumentId={userDocumentId}

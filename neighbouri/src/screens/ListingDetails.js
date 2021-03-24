@@ -6,12 +6,12 @@ import {
   Image,
 } from 'react-native';
 import RelatedItemsList from '../components/details/RelatedItemsList';
-import {Icon} from 'react-native-elements';
 import SellerInfoCard from '../components/details/SellerInfoCard';
 import Header from '../components/navigation/Header';
 import BackButton from '../components/navigation/BackButton';
 import { TouchableOpacity } from 'react-native';
 import BookmarkButton from '../components/BookmarkButton';
+import MessageIconButton from '../components/MessageIconButton';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 import { useIsFocused } from "@react-navigation/native";
@@ -67,22 +67,7 @@ export default function ListingDetailsScreen(props) {
               marginRight: 20,
               alignSelf: 'center'
             }}>
-            <View
-              style={{
-                backgroundColor: 'white',
-                width: 40,
-                height: 40,
-                borderRadius: 12,
-                justifyContent: 'center',
-                alignSelf: 'center'
-              }}>
-              <Icon
-                name="shopping-cart"
-                type="font-awesome"
-                color="#48CA36"
-                onPress={() => console.log('navigate.navigate to cart page')}
-              />
-            </View>
+            <MessageIconButton navigation={navigation}/>
           </View>,
         )}
         <View
