@@ -1,15 +1,10 @@
 import React, {useEffect, useState} from 'react';
 import {
   Text,
-  View,
-  TouchableOpacity,
   SafeAreaView,
-  Image,
-  ImageBackground
 } from 'react-native';
 import firestore from '@react-native-firebase/firestore';
 import storage from '@react-native-firebase/storage';
-import BookmarkButton from '../BookmarkButton';
 import ItemTile from '../ItemTile';
 
 export default function RelatedItemsList(props) {

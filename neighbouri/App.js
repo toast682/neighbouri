@@ -41,10 +41,11 @@ const SavedStack = createStackNavigator();
 function SavedScreen() {
   return (
         <SavedStack.Navigator
-        initialRouteName='Saved'
-        screenOptions={{
-          headerShown: false,
-        }}>
+          initialRouteName='Saved'
+          screenOptions={{
+            headerShown: false,
+          }}
+        >
           <SavedStack.Screen name='Saved' component={Saved} />
           <SavedStack.Screen name='ListingDetails' component={ListingDetailsScreen} />
         </SavedStack.Navigator>

@@ -4,10 +4,6 @@ import {
   View,
   StyleSheet,
   FlatList,
-  TouchableOpacity,
-  Image,
-  Platform,
-  PermissionsAndroid,
 } from 'react-native';
 import firestore from '@react-native-firebase/firestore';
 import ItemTile from '../components/ItemTile'
@@ -19,17 +15,17 @@ export default function SavedScreen(props) {
   const [listings, setListings] = useState([]);
   const [userBookmarks, setUserBookmarks] = useState([]);
   const [userDocumentId, setUserDocumentId] = useState('');
-  const currentUser = auth().currentUser;
-  const currentUserId = currentUser.uid;
   const isFocused = useIsFocused();
   const navigation = props.navigation;
 
   useEffect(() => {
     getCurrentUser();
-    getData();
   }, [props, isFocused]);
 
   async function getCurrentUser() {
+    setListings([]);
+    const currentUser = auth().currentUser;
+    const currentUserId = currentUser.uid;
     await firestore()
       .collection('Users')
       .where('uid', '==', currentUserId)
@@ -39,6 +35,7 @@ export default function SavedScreen(props) {
         const bookmarks =
           userDocs.docs[0].data() && userDocs.docs[0].data().bookmarks;
         setUserBookmarks(bookmarks);
+        getData();
       })
       .catch((e) => {
         console.log('There was an error getting user: ', e);
@@ -46,7 +43,6 @@ export default function SavedScreen(props) {
   }
 
   async function getData() {
-    setListings([]);
     if (userBookmarks.length > 0) {
         await firestore()
         .collection('Listings')
