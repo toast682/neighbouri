@@ -1,5 +1,6 @@
 neighbouri/node_modules/
 neighbouri/ios/Pods
+neighbouri/functions/node_modules
 
 .DS_Store
 neighbouri/android/.zshrc
