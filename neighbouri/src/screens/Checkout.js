@@ -41,6 +41,7 @@ export default function Checkout({route, navigation}) {
           navigation.navigate('CardFormScreen', {
             item: item,
             currentUserId: currentUserId,
+            navigation,
           });
         }}></Button>
     </View>

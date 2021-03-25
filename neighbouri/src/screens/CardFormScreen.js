@@ -28,6 +28,7 @@ export default class CardFormScreen extends PureComponent {
       city: '',
       item: this.props.route.params.item,
       charge: this.props.route.params.item.Price * 100,
+      navigation: this.props.route.params.navigation,
     };
   }
   makePayment = async () => {
@@ -45,8 +46,13 @@ export default class CardFormScreen extends PureComponent {
       this.setState({loading: false, disabled: true});
       usersCollection
         .add(this.state.paymentMethod)
-        .then(console.log('success'))
-        .error(console.error());
+        .then(() => {
+          console.log('success');
+          this.state.navigation.navigate('ThankYou', {
+            item: this.state.item
+          });
+        })
+        .catch((e) => console.log(e));
     });
   };
   handleCardPayPress = async () => {
@@ -74,68 +80,97 @@ export default class CardFormScreen extends PureComponent {
     const {loading, paymentMethod} = this.state;
     return (
       <View style={styles.container}>
-        <Text style={styles.header}>Card Form</Text>
+        <Text style={styles.header}>Contact Information</Text>
         <TextInput
           placeholder="Name"
+          placeholderTextColor="gray"
+          style={styles.inputStyle}
           onChangeText={(val) => {
             this.setState({name: val});
           }}
         />
         <TextInput
           placeholder="Email"
+          placeholderTextColor="gray"
+          style={styles.inputStyle}
           onChangeText={(val) => {
             this.setState({email: val});
           }}
         />
         <TextInput
           placeholder="Phone Number"
+          placeholderTextColor="gray"
+          style={styles.inputStyle}
           onChangeText={(val) => {
             this.setState({phone: val});
           }}
           keyboardType={'phone-pad'}
         />
-        <Text>Address:</Text>
+        <Text style={{alignSelf: 'flex-start', marginTop: 20}}>
+          Billing Address:
+        </Text>
         <TextInput
           placeholder="Address"
+          placeholderTextColor="gray"
+          style={styles.inputStyle}
           onChangeText={(val) => {
             this.setState({address: val});
           }}
         />
-        <TextInput
-          placeholder="City"
-          onChangeText={(val) => {
-            this.setState({city: val});
-          }}
-        />
-        <TextInput
-          placeholder="State"
-          onChangeText={(val) => {
-            this.setState({state: val});
-          }}
-        />
+        <View style={{flexDirection: 'row'}}>
+          <TextInput
+            placeholder="City"
+            placeholderTextColor="gray"
+            style={[styles.inputStyle, {flex: 2, marginRight: 10}]}
+            onChangeText={(val) => {
+              this.setState({city: val});
+            }}
+          />
+          <TextInput
+            placeholder="State"
+            placeholderTextColor="gray"
+            style={[styles.inputStyle, {flex: 1}]}
+            onChangeText={(val) => {
+              this.setState({state: val});
+            }}
+          />
+        </View>
         <TextInput
           placeholder="Postal Code"
+          placeholderTextColor="gray"
+          style={styles.inputStyle}
           onChangeText={(val) => {
             this.setState({postalCode: val});
           }}
         />
         <PaymentButton
-          text="Enter your card details and pay"
+          text="ENTER CARD DETAILS"
           loading={loading}
+          style={{
+            alignItems: 'center',
+            borderRadius: 25,
+            backgroundColor: '#48CA36',
+            width: '90%',
+            borderWidth: 0,
+            marginTop: 30,
+          }}
           onPress={this.handleCardPayPress}
           disabled={this.state.disabled}
         />
-        <View style={styles.paymentMethod}>
-          {paymentMethod && (
-            <>
-              <Button
-                title="Make Payment"
-                loading={loading}
-                onPress={this.makePayment}
-                disabled={this.state.disabled}
-              />
-            </>
-          )}
+        <View
+          style={{
+            marginTop: 25,
+            width: '90%',
+            backgroundColor: '#48CA36',
+            borderRadius: 25,
+          }}>
+          <Button
+            title="Make Payment"
+            loading={loading}
+            color="white"
+            onPress={this.makePayment}
+            disabled={paymentMethod === null}
+          />
         </View>
       </View>
     );
@@ -145,8 +180,9 @@ export default class CardFormScreen extends PureComponent {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
     alignItems: 'center',
+    paddingTop: 50,
+    paddingHorizontal: '5%',
   },
   header: {
     fontSize: 20,
@@ -160,5 +196,15 @@ const styles = StyleSheet.create({
   },
   paymentMethod: {
     height: 20,
+  },
+  inputStyle: {
+    height: 40,
+    width: '100%',
+    borderColor: '#6c6767',
+    borderWidth: 1,
+    borderRadius: 8,
+    marginTop: 10,
+    paddingLeft: 5,
+    backgroundColor: 'white',
   },
 });

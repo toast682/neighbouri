@@ -159,9 +159,15 @@ export default function ListingDetailsScreen(props) {
             }}>
             <TouchableOpacity
                onPress={() => {
-              navigation.navigate('Checkout', {
+              // No Cart For Now
+              // navigation.navigate('Checkout', {
+              //   item: item,
+              //   currentUserId: currentUserId,
+              // });
+              navigation.navigate('CardFormScreen', {
                 item: item,
                 currentUserId: currentUserId,
+                navigation,
               });
             }}
               style={{
@@ -172,7 +178,7 @@ export default function ListingDetailsScreen(props) {
                 width: 200
                 }}
             >
-              <Text style={{color: 'white', margin: 10, fontSize: 22}}>ADD TO CART</Text>
+              <Text style={{color: 'white', margin: 10, fontSize: 22}}>CHECKOUT</Text>
             </TouchableOpacity>
           </View>
         <View

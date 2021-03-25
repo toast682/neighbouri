@@ -49,8 +49,8 @@ export default class PayementButton extends PureComponent {
         onPress={this.handlePress}>
         <View>
           {loading && <ActivityIndicator animating size="small" />}
-          {!loading && !disabled && <Text>{text}</Text>}
-          {!loading && disabled && <Text>{disabledText || text}</Text>}
+          {!loading && !disabled && <Text style={{color: 'white', fontSize: 16}}>{text}</Text>}
+          {!loading && disabled && <Text style={{color: 'white',fontSize: 16}}>{disabledText || text}</Text>}
         </View>
       </TouchableHighlight>
     );

@@ -112,14 +112,19 @@ export default function ProfileScreen({navigation}) {
   }
 
   async function getData() {
-    const reference = await storage()
+    await storage()
       .ref('ProfilePicture')
       .child(auth().currentUser.uid + '.JPG')
       .getDownloadURL()
+      .then((res) => {
+        setPhoto(res);
+      })
       .catch(() => {
-        storage().ref('ProfilePicture').child('Apple.jpg').getDownloadURL();
+        storage().ref('ProfilePicture').child('Apple.jpg').getDownloadURL().then((res) => {
+          setPhoto(res);
+        });
       });
-    setPhoto(reference);
+    
 
     await firestore()
       .collection('Users')
@@ -128,8 +133,8 @@ export default function ProfileScreen({navigation}) {
       .then((userDoc) => {
         setUser(userDoc.data());
         setDocumentId(userDoc.id);
-        setSellerRating(user.SellerRating[1]);
-        setSellerNumberOfRatings(user.SellerRating[0]);
+        setSellerRating(userDoc.data().SellerRating[1]);
+        setSellerNumberOfRatings(userDoc.data().SellerRating[0]);
       });
   }
 
@@ -189,7 +194,7 @@ export default function ProfileScreen({navigation}) {
                 imageSize={25}
                 ratingCount={5}
               />
-              {UserInfoText(require('../assets/Phone.png'), user.Phone)}
+              {UserInfoText(require('../assets/Phone.png'), user.Phone !== undefined ? user.Phone : 'Unavailable')}
             </View>
           </View>
         )}>

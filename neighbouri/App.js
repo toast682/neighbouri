@@ -19,6 +19,7 @@ import CreatePostingScreen from './src/screens/CreatePosting';
 import ListingDetailsScreen from './src/screens/ListingDetails';
 import CardFormScreen from './src/screens/CardFormScreen';
 import Checkout from './src/screens/Checkout';
+import ThankYou from './src/screens/ThankYou';
 
 enableScreens();
 
@@ -38,6 +39,7 @@ function Home() {
       />
       <HomeStack.Screen name="Checkout" component={Checkout} />
       <HomeStack.Screen name="CardFormScreen" component={CardFormScreen} />
+      <HomeStack.Screen name="ThankYou" component={ThankYou} />
     </HomeStack.Navigator>
   );
 }
