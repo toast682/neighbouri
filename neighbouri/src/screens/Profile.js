@@ -1,31 +1,110 @@
 import React, {useEffect, useState} from 'react';
-import {SafeAreaView, Text, View, FlatList, Image, StyleSheet, Modal, TouchableOpacity} from 'react-native';
+import {
+  Text,
+  View,
+  FlatList,
+  Image,
+  StyleSheet,
+  Modal,
+  TouchableOpacity,
+} from 'react-native';
 import storage from '@react-native-firebase/storage';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
-import {HPageViewHoc} from 'react-native-head-tab-view';
+import {HFlatList} from 'react-native-head-tab-view';
 import {CollapsibleHeaderTabView} from 'react-native-scrollable-tab-view-collapsible-header';
-import HistoryButton from '../components/HistoryButton';
 import Header from '../components/navigation/Header';
 import SettingButton from '../components/SettingButton';
-import GeoButton from '../components/GeoButton';
-import ProfileIconButton from '../components/ProfileIconButton';
 import UserInfoText from '../components/profile/UserInfoText';
-import { Rating } from 'react-native-ratings';
-
+import {Rating, AirbnbRating} from 'react-native-ratings';
+import moment from 'moment'
 
 export default function ProfileScreen({navigation}) {
-  const HFlatList = HPageViewHoc(FlatList);
-
   const [photo, setPhoto] = useState();
   const [user, setUser] = useState();
   const [show, setShow] = useState(false);
-  const [currRating, setCurrRating] = useState(0);
-
+  const [listings, setListings] = useState([]);
+  const [purchases, setPurchases] = useState([]);
+  const [sellerRating, setSellerRating] = useState(0);
+  const [sellerNumberOfRatings, setSellerNumberOfRatings] = useState(0);
+  const [newRating, setNewRating] = useState(0);
+  const [documentId, setDocumentId] = useState('');
 
   useEffect(() => {
     getData();
+    getListingData();
+    getPurchaseData();
   }, []);
+
+   async function updateRating() {
+     await firestore()
+       .collection('Users')
+       .doc(documentId)
+       .update({
+          SellerRating:[sellerNumberOfRatings+1,(sellerRating*sellerNumberOfRatings+newRating)/(sellerNumberOfRatings+1)]
+       })
+       .catch((e) => {
+          console.log(e);
+       });
+   }
+
+   async function rateSeller(sellerID) {
+     setShow(true);
+     await firestore()
+      .collection('Users')
+      .where('uid', '==', sellerID)
+      .get()
+      .then((seller) => {
+         const sellerData = seller.docs[0].data();
+         setDocumentId(seller.docs[0].id);
+         setSellerRating(sellerData.SellerRating[1]);
+         setSellerNumberOfRatings(sellerData.SellerRating[0]);
+         updateRating();
+      })
+      .catch((error) => {
+         console.log(error);
+      });
+   }
+
+  async function getListingData() {
+    setListings([]);
+    await firestore()
+      .collection('Listings')
+      .where('SellerID', '==', auth().currentUser.uid)
+      .orderBy('PostedDate', 'desc')
+      .get()
+      .then((listingDocs) => {
+        listingDocs.forEach((doc) => {
+          buildObject(doc);
+        });
+      });
+  }
+
+  async function getPurchaseData() {
+    setPurchases([]);
+    await firestore()
+      .collection('Transactions')
+      .where('BuyerID', '==', auth().currentUser.uid)
+      .orderBy('Date', 'desc')
+      .get()
+      .then((purchaseDocs) => {
+        purchaseDocs.forEach((doc) => {
+          buildPurchase(doc);
+        });
+      });
+  }
+
+  async function buildObject(doc) {
+    const reference = await storage().ref(doc.data().ImageURI).getDownloadURL();
+    doc.data().photo = {uri: reference};
+    setListings((prev) => [...prev, doc.data()]);
+  }
+
+  async function buildPurchase(doc) {
+    const reference = await storage().ref(doc.data().ImageURI).getDownloadURL();
+    doc.data().photo = {uri: reference};
+    setPurchases((prev) => [...prev, doc.data()]);
+  }
 
   function showRating(rating) {
     setCurrRating(rating);
@@ -34,8 +113,12 @@ export default function ProfileScreen({navigation}) {
 
   async function getData() {
     const reference = await storage()
-      .ref('ProfilePicture/Apple.jpg')
-      .getDownloadURL();
+      .ref('ProfilePicture')
+      .child(auth().currentUser.uid + '.JPG')
+      .getDownloadURL()
+      .catch(() => {
+        storage().ref('ProfilePicture').child('Apple.jpg').getDownloadURL();
+      });
     setPhoto(reference);
 
     await firestore()
@@ -44,6 +127,9 @@ export default function ProfileScreen({navigation}) {
       .get()
       .then((userDoc) => {
         setUser(userDoc.data());
+        setDocumentId(userDoc.id);
+        setSellerRating(user.SellerRating[1]);
+        setSellerNumberOfRatings(user.SellerRating[0]);
       });
   }
 
@@ -52,15 +138,21 @@ export default function ProfileScreen({navigation}) {
   }
 
   return (
-    <SafeAreaView
-      style={{flex: 1, alignItems: 'center', backgroundColor: 'white'}}>
+    <View
+      style={{
+        height: '100%',
+        backgroundColor: 'white',
+        flex: 1,
+        paddingTop: 30,
+      }}>
       {Header(
         <View style={{flex: 1}} />,
         <View style={{flex: 5}} />,
         SettingButton(navigation),
       )}
       <CollapsibleHeaderTabView
-        makeHeaderHeight={() => 120}
+        tabBarActiveTextColor='#48CA36'
+        tabBarUnderlineStyle={{backgroundColor: '#48CA36'}}
         renderScrollHeader={() => (
           <View
             style={{
@@ -90,19 +182,25 @@ export default function ProfileScreen({navigation}) {
                 }}>
                 {user.Username}
               </Text>
-              {UserInfoText(require('../assets/History.png'), user.Phone)}
-              {UserInfoText(require('../assets/History.png'), user.Rating)}
+              <Rating
+                style={{marginBottom: 10, alignSelf: 'flex-start'}}
+                startingValue={user.SellerRating[1]}
+                readonly={true}
+                imageSize={25}
+                ratingCount={5}
+              />
+              {UserInfoText(require('../assets/Phone.png'), user.Phone)}
             </View>
           </View>
         )}>
         <HFlatList
           index={0}
           tabLabel={'Listings'}
-          data={['Banana', 'Pizza', 'Apples', 'Milk', 'Ramen']}
+          data={listings}
           renderItem={({item}) => (
             <View
               style={{
-                backgroundColor: 'grey',
+                backgroundColor: '#faf9f9',
                 margin: 10,
                 height: 150,
                 borderRadius: 8,
@@ -114,13 +212,15 @@ export default function ProfileScreen({navigation}) {
                   justifyContent: 'space-between',
                   margin: 10,
                 }}>
-                <Text>Purchased on date</Text>
-                <Text>View Receipt</Text>
+                <Text>Listed on {moment(item.PostedDate.toDate(), 'YYYYMMDD').format('ll')}</Text>
+                <Text style={{color: 'brown'}} onPress={() => {
+                  console.log('edit')
+                }}>Edit Post</Text>
               </View>
               <View style={{flex: 3, flexDirection: 'row'}}>
                 <View>
                   <Image
-                    source={{uri: photo}}
+                    source={{uri: item.photo.uri}}
                     style={{
                       width: 80,
                       height: 80,
@@ -129,23 +229,28 @@ export default function ProfileScreen({navigation}) {
                     }}></Image>
                 </View>
                 <View>
-                  <Text>{item}</Text>
-                  <Text onPress={()=>{showRating(3)}}>Review Seller</Text>
+                  <Text style={{fontWeight: 'bold'}}>{item.Item}</Text>
+                  <Text>
+                    ${item.Price}
+                  </Text>
+                  <Text>
+                    {item.Description}
+                  </Text>
                 </View>
               </View>
             </View>
           )}
           style={{width: '100%'}}
-          keyExtractor={(name) => name}
         />
+        
         <HFlatList
           index={1}
-          data={['B', 'P', 'A']}
+          data={purchases}
           tabLabel={'Purchases'}
           renderItem={({item}) => (
             <View
               style={{
-                backgroundColor: 'grey',
+                backgroundColor: '#faf9f9',
                 margin: 10,
                 height: 150,
                 borderRadius: 8,
@@ -157,92 +262,62 @@ export default function ProfileScreen({navigation}) {
                   justifyContent: 'space-between',
                   margin: 10,
                 }}>
-                <Text>Purchased on date</Text>
-                <Text>View Receipt</Text>
+                <Text>Purchased on {moment(item.Date.toDate(), 'YYYYMMDD').format('ll')}</Text>
+                <Text style={{color: 'brown'}} onPress={() => {
+                  console.log('receipt')
+                }}>View Receipt</Text>
               </View>
               <View style={{flex: 3, flexDirection: 'row'}}>
                 <View>
                   <Image
-                    source={{uri: photo}}
+                    source={{uri: item.photo.uri}}
                     style={{
                       width: 80,
                       height: 80,
                       borderRadius: 8,
                       marginHorizontal: 10,
-                    }}></Image>
+                    }}/>
                 </View>
                 <View>
-                  <Text>{item}</Text>
-                  <Text>Review Seller</Text>
+                  <Text style={{fontWeight: 'bold'}}>{item.Item} - ${item.Price}</Text>
+                  <Text>{item.SellerName}</Text>
+                  <TouchableOpacity onPress={() => {rateSeller(item.SellerID)}}>
+                  <Text style={{color: '#F9A528', textDecorationLine: 'underline'}}>Review Seller</Text>
+                  </TouchableOpacity>
                 </View>
               </View>
             </View>
           )}
           style={{width: '100%'}}
-          keyExtractor={(name) => name}
-        />
-        <HFlatList
-          index={2}
-          data={['B', 'P', 'A']}
-          tabLabel={'Reviews'}
-          renderItem={({item}) => (
-            <View
-              style={{
-                backgroundColor: 'grey',
-                margin: 10,
-                height: 150,
-                borderRadius: 8,
-              }}>
-              <View
-                style={{
-                  flex: 1,
-                  flexDirection: 'row',
-                  justifyContent: 'space-between',
-                  margin: 10,
-                }}>
-                <Text>Purchased on date</Text>
-                <Text>View Receipt</Text>
-              </View>
-              <View style={{flex: 3, flexDirection: 'row'}}>
-                <View>
-                  <Image
-                    source={{uri: photo}}
-                    style={{
-                      width: 80,
-                      height: 80,
-                      borderRadius: 8,
-                      marginHorizontal: 10,
-                    }}></Image>
-                </View>
-                <View>
-                  <Text>{item}</Text>
-                  <Text>Review Seller</Text>
-                </View>
-              </View>
-            </View>
-          )}
-          style={{width: '100%'}}
-          keyExtractor={(name) => name}
         />
       </CollapsibleHeaderTabView>
-      <Modal
-        transparent={true}
-        visible={show}
-      >
-        <View style={styles.modalOuterContainer}>
-            <View style={styles.modalInnerContainer}>
-                <Text style={styles.title}> Seller Review </Text>
-                <Rating showRating imageSize={40} readonly startingValue={currRating} />
-                <TouchableOpacity style={styles.button} onPress={()=>{setShow(false)}}>
-                    <Text>{"Close"}</Text>
-                </TouchableOpacity>
-            </View>
-        </View>
-      </Modal>
-    </SafeAreaView>
+
+       <Modal transparent={true} visible={show}>
+           <View style={styles.modalOuterContainer}>
+              <View style={styles.modalInnerContainer}>
+                 <Text style={styles.modalTitle}> Rate the seller </Text>
+                 <AirbnbRating showRating
+                    readonly={false}
+                    onFinishRating={setNewRating}
+                    reviews={["Terrible", "Bad", "OK", "Good","Amazing"]}
+                    imageSize={40}/>
+                 <View style={{ flexDirection:"row" }}>
+                    <TouchableOpacity style={styles.modalButton} onPress={()=>{setShow(false);}}>
+                       <Text style={styles.buttonText}>{"CLOSE"}</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.modalButton} onPress={()=>{
+                       setShow(false);
+                       updateRating();
+                      }}>
+                        <Text style={styles.buttonText}>{"SUBMIT"}</Text>
+                    </TouchableOpacity>
+                 </View>
+              </View>
+           </View>
+        </Modal>
+    </View>
   );
 }
-
 
 const styles = StyleSheet.create({
   container: {
@@ -259,6 +334,14 @@ const styles = StyleSheet.create({
     marginBottom: 70,
   },
 
+  modalTitle: {
+    color: '#48CA36',
+    fontSize: 30,
+    marginBottom: 20,
+    marginTop: 20,
+    textAlign:'center',
+  },
+
   modalOuterContainer: {
     flex: 1,
     backgroundColor: '#000000aa',
@@ -267,7 +350,10 @@ const styles = StyleSheet.create({
   modalInnerContainer: {
     flex: 1,
     backgroundColor: '#ffffff',
+    justifyContent: 'center',
     margin: 50,
+    marginTop: '35%',
+    marginBottom: '35%',
     padding: 40,
     borderRadius: 10,
     alignItems: 'center',
@@ -277,6 +363,22 @@ const styles = StyleSheet.create({
     color: '#3dafe0',
     margin: 50,
   },
+
+  modalButton: {
+    backgroundColor: "#48CA36",
+    borderRadius: 20,
+    paddingVertical: 7,
+    paddingHorizontal: 7,
+    margin:30,
+    fontSize: 20,
+  },
+
+  buttonText: {
+    fontSize: 18,
+    color: "#fff",
+    alignSelf: "center",
+  },
+
   input: {
     margin: 10,
     height: 40,

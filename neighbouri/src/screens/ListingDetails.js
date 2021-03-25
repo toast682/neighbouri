@@ -1,8 +1,5 @@
 import React, {useEffect, useState} from 'react';
 import {
-  Button,
-  SafeAreaView,
-  ImageBackground,
   Text,
   View,
   ScrollView,
@@ -11,72 +8,13 @@ import {
 import RelatedItemsList from '../components/details/RelatedItemsList';
 import {Icon} from 'react-native-elements';
 import SellerInfoCard from '../components/details/SellerInfoCard';
-import auth from '@react-native-firebase/auth';
-import firestore from '@react-native-firebase/firestore';
 import Header from '../components/navigation/Header';
 import BackButton from '../components/navigation/BackButton';
-
-const usersCollection = firestore().collection('Users');
+import { TouchableOpacity } from 'react-native';
+import BookmarkButton from '../components/BookmarkButton';
 
 export default function ListingDetailsScreen({route, navigation}) {
   const item = route.params;
-  const [isBookmarked, setIsBookmarked] = useState(false);
-  const [userBookmarks, setUserBookmarks] = useState([]);
-  const [userDocumentId, setUserDocumentId] = useState('');
-  const currentUser = auth().currentUser;
-  const currentUserId = currentUser.uid;
-
-  useEffect(() => {
-    getCurrentUser();
-  }, []);
-
-  async function getCurrentUser() {
-    await firestore()
-      .collection('Users')
-      .where('uid', '==', currentUserId)
-      .get()
-      .then((userDocs) => {
-        setUserDocumentId(userDocs.docs[0].id);
-        const bookmarks =
-          userDocs.docs[0].data() && userDocs.docs[0].data().bookmarks;
-        setUserBookmarks(bookmarks);
-        if (bookmarks.includes(item.ListingID)) {
-          setIsBookmarked(true);
-        }
-      })
-      .catch((e) => {
-        console.log('There was an error getting user: ', e);
-      });
-  }
-
-  async function addToBookmarks() {
-    await usersCollection
-      .doc(userDocumentId)
-      .update({
-        bookmarks: [...userBookmarks, item.ListingID],
-      })
-      .then(() => {
-        setIsBookmarked(true);
-      })
-      .catch((e) => {
-        console.log('There was an error adding bookmark added to user: ', e);
-      });
-  }
-
-  async function removeFromBookmarks() {
-    const rmBookmarks = userBookmarks.filter((b) => b !== item.ListingID);
-    await usersCollection
-      .doc(userDocumentId)
-      .update({
-        bookmarks: rmBookmarks,
-      })
-      .then(() => {
-        setIsBookmarked(false);
-      })
-      .catch((e) => {
-        console.log('There was an error removing bookmark from user: ', e);
-      });
-  }
 
   return (
     <View style={{flex: 1, backgroundColor: 'white'}}>
@@ -96,24 +34,33 @@ export default function ListingDetailsScreen({route, navigation}) {
           <View
             style={{
               flex: 1,
-              flexDirection: 'row',
-              justifyContent: 'flex-end',
+              justifyContent: 'center',
               marginRight: 20,
-              alignSelf: 'center',
+              alignSelf: 'center'
             }}>
-            <Icon
-              name="shopping-cart"
-              type="font-awesome"
-              color="gold"
-              onPress={() => console.log('navigate.navigate to cart page')}
-            />
+            <View
+              style={{
+                backgroundColor: 'white',
+                width: 40,
+                height: 40,
+                borderRadius: 12,
+                justifyContent: 'center',
+                alignSelf: 'center'
+              }}>
+              <Icon
+                name="shopping-cart"
+                type="font-awesome"
+                color="#48CA36"
+                onPress={() => console.log('navigate.navigate to cart page')}
+              />
+            </View>
           </View>,
         )}
         <View
           style={{
             backgroundColor: 'white',
             marginTop: 180,
-            height: 200,
+            minHeight: 200,
             width: '100%',
             borderRadius: 20,
             shadowColor: '#000',
@@ -138,28 +85,13 @@ export default function ListingDetailsScreen({route, navigation}) {
               style={{
                 flex: 4,
                 fontSize: 25,
-                fontWeight: 'bold',
                 color: 'black',
                 textAlign: 'center',
               }}>
-              {item.Item}
+              ABOUT ITEM
             </Text>
-            <View style={{flex: 1}}>
-              {isBookmarked ? (
-                <Icon
-                  name="bookmark"
-                  type="font-awesome"
-                  color="gold"
-                  onPress={() => removeFromBookmarks()}
-                />
-              ) : (
-                <Icon
-                  name="bookmark-o"
-                  type="font-awesome"
-                  color="gold"
-                  onPress={() => addToBookmarks()}
-                />
-              )}
+            <View style={{flex: 1}} >
+            <BookmarkButton itemID={item.ListingID} />
             </View>
           </View>
           <View
@@ -167,25 +99,64 @@ export default function ListingDetailsScreen({route, navigation}) {
               alignSelf: 'stretch',
               margin: 10,
               borderRadius: 8,
-              padding: 5,
-              backgroundColor: '#f0f0f0',
+              padding: 5
             }}>
-            <Text style={{fontSize: 16}}>{item.Description}</Text>
+            <Text style={{fontSize: 16, fontWeight: 'bold'}}>{item.Item}</Text>
             <Text style={{fontSize: 16}}>${item.Price}</Text>
+            {!!item.Condition && <View style={{flexDirection: 'row'}}>
+              <Text style={{fontSize: 16, fontWeight: 'bold'}}>Condition: </Text>
+              <Text style={{fontSize: 16}}>{item.Condition}</Text>
+            </View>}
+            {!!item.ExpiryDate && <View style={{flexDirection: 'row'}}>
+              <Text style={{fontSize: 16, fontWeight: 'bold'}}>Expiry Date: </Text>
+              <Text style={{fontSize: 16}}>{item.ExpiryDate.Month} {item.ExpiryDate.Day}, {item.ExpiryDate.Year}</Text>
+            </View>}
+            <Text style={{fontSize: 16, marginTop: 10, marginBottom: 20}}>{item.Description}</Text>
+            {!!item.PickupLocation && !!item.PickupInstruction &&
+              <View
+                style={{
+                  alignItems: 'center',
+                  alignSelf: 'stretch',
+                  marginBottom: 10,
+                  justifyContent: 'space-evenly',
+                }}>
+                <View style={{borderWidth: 1, borderColor:'#989595', width: 200}}/>
+                <Text style={{fontSize: 20, marginTop: 10}}>PICKUP INFO</Text>
+              </View>}
+            {!!item.PickupLocation && <View style={{flexDirection: 'row'}}>
+              <Text style={{fontSize: 16, fontWeight: 'bold'}}>Pickup Location: </Text>
+              <Text style={{fontSize: 16}}>{item.PickupLocation}</Text>
+            </View>}
+            {!!item.PickupInstruction && <View style={{flexDirection: 'row', marginBottom: 10}}>
+              <Text style={{fontSize: 16, fontWeight: 'bold'}}>Pickup Instruction: </Text>
+              <Text style={{fontSize: 16}}>{item.PickupInstruction}</Text>
+            </View>}
           </View>
         </View>
-
-        <View style={{margin: 10, borderRadius: 8}}>
-          <Button
-            title="Add to Cart"
-            onPress={() => {
+        <View
+            style={{
+              alignItems: 'center',
+              margin: 20,
+              justifyContent: 'center',
+            }}>
+            <TouchableOpacity
+               onPress={() => {
               navigation.navigate('Checkout', {
                 item: item,
                 currentUserId: currentUserId,
               });
             }}
-          />
-        </View>
+              style={{
+                flex: 1,
+                alignItems: 'center',
+                borderRadius: 25,
+                backgroundColor: '#48CA36',
+                width: 200
+                }}
+            >
+              <Text style={{color: 'white', margin: 10, fontSize: 22}}>ADD TO CART</Text>
+            </TouchableOpacity>
+          </View>
         <View
           style={{
             alignSelf: 'stretch',
@@ -202,7 +173,7 @@ export default function ListingDetailsScreen({route, navigation}) {
             borderRadius: 8,
             padding: 5,
           }}>
-          <Text style={{fontSize: 16}}>Products related to this item</Text>
+          <Text style={{fontSize: 16, marginBottom: 10}}>Products related to this item</Text>
           <RelatedItemsList
             currentItemId={item.ListingID}
             currentItemTitle={item.Item}

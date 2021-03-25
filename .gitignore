@@ -3,3 +3,4 @@ neighbouri/ios/Pods
 neighbouri/functions/node_modules
 
 .DS_Store
+neighbouri/android/.zshrc
