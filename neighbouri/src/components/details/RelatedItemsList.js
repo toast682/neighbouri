@@ -1,17 +1,14 @@
 import React, {useEffect, useState} from 'react';
 import {
   Text,
-  View,
-  TouchableOpacity,
   SafeAreaView,
-  Image,
-  ImageBackground
 } from 'react-native';
 import firestore from '@react-native-firebase/firestore';
 import storage from '@react-native-firebase/storage';
-import BookmarkButton from '../BookmarkButton';
+import ItemTile from '../ItemTile';
 
-export default function RelatedItemsList({navigation, currentItemId, currentItemTitle}) {
+export default function RelatedItemsList(props) {
+    const {navigation, currentItemId, currentItemTitle, userBookmarks, userDocumentId} = props;
     const [relatedItems, setRelatedItems] = useState([]);
 
     useEffect(() => {
@@ -48,38 +45,13 @@ export default function RelatedItemsList({navigation, currentItemId, currentItem
 
     const listItems = relatedItems.map((item, index) => {
       return (
-          <View
+          <ItemTile
             key={index}
-            style={{
-                borderRadius: 15,
-                margin: 2,
-                backgroundColor: '#FAF9F9'
-              }}
-          > 
-            <ImageBackground 
-                source={item.photo}
-                style={{
-                  width: 150,
-                  height: 150,
-                  flex: 1,
-                  flexDirection: 'row',
-                  justifyContent: 'flex-end'
-                }}
-                imageStyle={{
-                  borderRadius: 15
-                }}
-              ><View style={{margin: 5}}>
-                <BookmarkButton itemID={item.ListingID} />
-              </View>
-            </ImageBackground>
-            <TouchableOpacity
-              style={{padding: 5, alignItems: 'center', flexDirection: 'row'}}
-              onPress={() => navigation.navigate('ListingDetails', item)}
-            >
-              <Text>${item.Price} </Text>
-              <Text>{item.Item}</Text>
-            </TouchableOpacity>
-          </View>);
+            item={item}
+            navigation={navigation}
+            bookmarks={userBookmarks}
+            userDocumentId={userDocumentId}
+            />);
     });
 
     return (

@@ -11,21 +11,47 @@ import {
 } from 'react-native';
 import firestore from '@react-native-firebase/firestore';
 import {TextInput} from 'react-native-gesture-handler';
+import ItemTile from '../components/ItemTile';
 import storage from '@react-native-firebase/storage';
 import geohash from 'ngeohash';
 import Geolocation from '@react-native-community/geolocation';
+import auth from '@react-native-firebase/auth';
+import { useIsFocused } from "@react-navigation/native";
 
-export default function HomeScreen({navigation}) {
+export default function HomeScreen(props) {
+  const {navigation} = props;
   const [search, setSearch] = useState('');
   const [fullListing, setFullListings] = useState([]);
   const [listings, setListings] = useState([]);
   const [filters, setFilters] = useState([]);
   const [loc, setLoc] = useState('c2b2q7');
+  const [userBookmarks, setUserBookmarks] = useState([]);
+  const [userDocumentId, setUserDocumentId] = useState('');
+  const currentUser = auth().currentUser;
+  const currentUserId = currentUser.uid;
+  const isFocused = useIsFocused();
 
   useEffect(() => {
     getLocation();
+    getCurrentUser();
     getData();
-  }, []);
+  }, [props, isFocused]);
+
+  async function getCurrentUser() {
+    await firestore()
+      .collection('Users')
+      .where('uid', '==', currentUserId)
+      .get()
+      .then((userDocs) => {
+        setUserDocumentId(userDocs.docs[0].id);
+        const bookmarks =
+          userDocs.docs[0].data() && userDocs.docs[0].data().bookmarks;
+        setUserBookmarks(bookmarks);
+      })
+      .catch((e) => {
+        console.log('There was an error getting user: ', e);
+      });
+  }
 
   async function getLocation() {
     if (Platform.OS === 'android') {
@@ -234,33 +260,14 @@ export default function HomeScreen({navigation}) {
             </View>
           </View>
         }
-        renderItem={({item}) => (
-          <TouchableOpacity
-            style={{
-              width: '48%',
-              marginHorizontal: '1%',
-              marginBottom: 10,
-              height: 220,
-              borderRadius: 8,
-              backgroundColor: '#faf9f9',
-            }}
-            onPress={() => navigation.navigate('ListingDetails', item)}>
-            <View
-              style={{
-                borderRadius: 8,
-                flexDirection: 'row',
-              }}>
-              <Image
-                source={item.photo}
-                style={{width: '100%', height: 150, borderRadius: 10}}
-              />
-            </View>
-            <View style={{padding: 5}}>
-              <Text style={{fontWeight: 'bold'}}>{item.Item}</Text>
-              <Text>${item.Price}</Text>
-              <Text>{item.Name}</Text>
-            </View>
-          </TouchableOpacity>
+        renderItem={({item, index}) => (
+          <ItemTile
+            key={index}
+            item={item}
+            navigation={navigation}
+            bookmarks={userBookmarks}
+            userDocumentId={userDocumentId}
+            />
         )}
         keyExtractor={(item, index) => index.toString()}
         numColumns={2}
