@@ -2,7 +2,7 @@ import 'react-native-gesture-handler';
 import React, {useState, useEffect} from 'react';
 import {Text, View, Platform, Image} from 'react-native';
 import {enableScreens} from 'react-native-screens';
-import {NavigationContainer} from '@react-navigation/native';
+import {DefaultTheme, NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import auth from '@react-native-firebase/auth';
@@ -134,7 +134,14 @@ export default function App() {
 
   return (
     <NavigationContainer>
-      <Tab.Navigator>
+      <Tab.Navigator
+      tabBarOptions={{
+        activeBackgroundColor: '#FFF0CA',
+        inactiveBackgroundColor: '#FFF0CA',
+        style: {
+          backgroundColor: '#FFF0CA'
+        }
+      }}>
         <Tab.Screen
           name="Home"
           component={Home}
@@ -220,7 +227,6 @@ export default function App() {
             ),
           }}
         />
-        <Tab.Screen name="Payment" component={CardFormScreen} />
         <Tab.Screen
           name="Profile"
           component={Profile}

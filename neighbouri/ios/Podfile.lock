@@ -548,7 +548,7 @@ PODS:
     - React
   - react-native-geolocation-service (5.2.0):
     - React
-  - react-native-image-picker (3.2.1):
+  - react-native-image-picker (3.3.2):
     - React-Core
   - react-native-maps (0.27.1):
     - React
@@ -664,10 +664,14 @@ PODS:
     - React-RCTVibration
     - ReactCommon/turbomodule/core
     - Yoga
-  - RNScreens (2.17.1):
+  - RNScreens (2.18.1):
     - React-Core
   - RNVectorIcons (8.1.0):
     - React-Core
+  - Stripe (19.4.0)
+  - tipsi-stripe (8.0.2):
+    - React
+    - Stripe (>= 19.0.1)
   - Yoga (1.14.0)
   - YogaKit (1.18.1):
     - Yoga (~> 1.14)
@@ -735,6 +739,7 @@ DEPENDENCIES:
   - RNReanimated (from `../node_modules/react-native-reanimated`)
   - RNScreens (from `../node_modules/react-native-screens`)
   - RNVectorIcons (from `../node_modules/react-native-vector-icons`)
+  - tipsi-stripe (from `../node_modules/tipsi-stripe`)
   - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
 
 SPEC REPOS:
@@ -766,6 +771,7 @@ SPEC REPOS:
     - nanopb
     - OpenSSL-Universal
     - PromisesObjC
+    - Stripe
     - YogaKit
 
 EXTERNAL SOURCES:
@@ -851,6 +857,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-screens"
   RNVectorIcons:
     :path: "../node_modules/react-native-vector-icons"
+  tipsi-stripe:
+    :path: "../node_modules/tipsi-stripe"
   Yoga:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
@@ -900,7 +908,7 @@ SPEC CHECKSUMS:
   react-native-date-picker: 242eec7af56cea5fb2706d5db5d3837060b3884b
   react-native-geolocation: c956aeb136625c23e0dce0467664af2c437888c9
   react-native-geolocation-service: 7c9436da6dfdecd9526c62eac62ea2bc3f0cc8ea
-  react-native-image-picker: 64d12e81f3d9dad0af107fe6536b295d51932ec0
+  react-native-image-picker: b42940647478bf106ad3c491d6f5d9d40916d865
   react-native-maps: f4b89da81626ad7f151a8bfcb79733295d31ce5c
   react-native-safe-area-context: f0906bf8bc9835ac9a9d3f97e8bde2a997d8da79
   react-native-viewpager: b99b53127d830885917ef84809c5065edd614a78
@@ -921,11 +929,13 @@ SPEC CHECKSUMS:
   RNFBStorage: fb33c149ca21187b86f4e32dc35693525b5f2ac0
   RNGestureHandler: a479ebd5ed4221a810967000735517df0d2db211
   RNReanimated: 5231286440b796e09df3bfa5c1b12b02bfe07664
-  RNScreens: b6c9607e6fe47c1b6e2f1910d2acd46dd7ecea3a
+  RNScreens: f7ad633b2e0190b77b6a7aab7f914fad6f198d8d
   RNVectorIcons: 31cebfcf94e8cf8686eb5303ae0357da64d7a5a4
+  Stripe: 92f1c73a9dbd3c54277ed06a1fea6e08f20414c6
+  tipsi-stripe: 6f4d2805c174b5109f455932d5e9f302bf2a3b9a
   Yoga: 4bd86afe9883422a7c4028c00e34790f560923d6
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
 PODFILE CHECKSUM: f10d84f8bec2473a96d5dbea26b7203c0d152895
 
-COCOAPODS: 1.9.3
+COCOAPODS: 1.10.1
