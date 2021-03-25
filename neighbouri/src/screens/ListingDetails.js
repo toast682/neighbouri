@@ -100,7 +100,7 @@ export default function ListingDetailsScreen(props) {
                 flex: 4,
                 fontSize: 25,
                 color: 'black',
-                textAlign: 'center'
+                textAlign: 'center',
               }}>
               ABOUT ITEM
             </Text>
@@ -158,9 +158,12 @@ export default function ListingDetailsScreen(props) {
               justifyContent: 'center',
             }}>
             <TouchableOpacity
-              onPress={() => {
-                console.log('add to cart');
-              }}
+               onPress={() => {
+              navigation.navigate('Checkout', {
+                item: item,
+                currentUserId: currentUserId,
+              });
+            }}
               style={{
                 flex: 1,
                 alignItems: 'center',
