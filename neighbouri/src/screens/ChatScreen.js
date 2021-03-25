@@ -1,9 +1,9 @@
 import React, {useState, useCallback, useEffect} from 'react';
 import {GiftedChat} from 'react-native-gifted-chat';
-import firestone from '@react-native-firebase/firestore';
+import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 
-const chat = firestone().collection('Chat');
+const chat = firestore().collection('Chat');
 
 export default function ChatScreen() {
   const [messages, setMessages] = useState([]);
@@ -40,7 +40,7 @@ export default function ChatScreen() {
     //   });
   }
 
-  const upDateFirestone = async (messages) => {
+  const upDatefirestore = async (messages) => {
     chat.add(messages);
   };
 
@@ -48,7 +48,7 @@ export default function ChatScreen() {
     setMessages((previousMessages) =>
       GiftedChat.append(previousMessages, messages),
     );
-    upDateFirestone(messages).then(() => {
+    upDatefirestore(messages).then(() => {
       console.log('success');
     });
   }, []);
