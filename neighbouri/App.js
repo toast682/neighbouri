@@ -2,7 +2,7 @@ import 'react-native-gesture-handler';
 import React, {useState, useEffect} from 'react';
 import {Text, View, Platform, Image} from 'react-native';
 import {enableScreens} from 'react-native-screens';
-import {NavigationContainer} from '@react-navigation/native';
+import {DefaultTheme, NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import auth from '@react-native-firebase/auth';
@@ -13,10 +13,14 @@ import HistoryScreen from './src/screens/History';
 import LoginScreen from './src/screens/LogIn';
 import SignUpScreen from './src/screens/SignUp';
 import HomeScreen from './src/screens/Home';
+import Saved from './src/screens/Saved';
 import ProfileInfoScreen from './src/screens/ProfileInfo';
 import CreatePostingScreen from './src/screens/CreatePosting';
 import ListingDetailsScreen from './src/screens/ListingDetails';
 import ChatScreen from './src/screens/ChatScreen';
+import CardFormScreen from './src/screens/CardFormScreen';
+import Checkout from './src/screens/Checkout';
+import ThankYou from './src/screens/ThankYou';
 
 enableScreens();
 
@@ -34,15 +38,26 @@ function Home() {
         name="ListingDetails"
         component={ListingDetailsScreen}
       />
+      <HomeStack.Screen name="Checkout" component={Checkout} />
+      <HomeStack.Screen name="CardFormScreen" component={CardFormScreen} />
+      <HomeStack.Screen name="ThankYou" component={ThankYou} />
     </HomeStack.Navigator>
   );
 }
 
+const SavedStack = createStackNavigator();
+
 function SavedScreen() {
   return (
-    <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-      <Text>Saved!</Text>
-    </View>
+        <SavedStack.Navigator
+          initialRouteName='Saved'
+          screenOptions={{
+            headerShown: false,
+          }}
+        >
+          <SavedStack.Screen name='Saved' component={Saved} />
+          <SavedStack.Screen name='ListingDetails' component={ListingDetailsScreen} />
+        </SavedStack.Navigator>
   );
 }
 
@@ -58,13 +73,13 @@ function CreateScreen() {
   );
 }
 
-// function FeedScreen() {
-//   return (
-//     <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-//       <Text>Feed!</Text>
-//     </View>
-//   );
-// }
+function FeedScreen() {
+  return (
+    <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+      <Text>Feed!</Text>
+    </View>
+  );
+}
 
 const ProfileStack = createNativeStackNavigator();
 function Profile() {
@@ -110,7 +125,11 @@ export default function App() {
           initialRouteName="SignUpScreen"
           screenOptions={{headerShown: false}}>
           <SignUpLoginStack.Screen name="SignUp" component={SignUpScreen} />
-          <SignUpLoginStack.Screen name="LogIn" component={LoginScreen} />
+          <SignUpLoginStack.Screen
+            name="LogIn"
+            component={LoginScreen}
+            options={{title: 'Checkout'}}
+          />
         </SignUpLoginStack.Navigator>
       </NavigationContainer>
     );
@@ -118,7 +137,14 @@ export default function App() {
 
   return (
     <NavigationContainer>
-      <Tab.Navigator>
+      <Tab.Navigator
+      tabBarOptions={{
+        activeBackgroundColor: '#FFF0CA',
+        inactiveBackgroundColor: '#FFF0CA',
+        style: {
+          backgroundColor: '#FFF0CA'
+        }
+      }}>
         <Tab.Screen
           name="Home"
           component={Home}
@@ -181,7 +207,29 @@ export default function App() {
             ),
           }}
         />
-        <Tab.Screen
+        {/* <Tab.Screen
+          name="Feed"
+          component={FeedScreen}
+          options={{
+            tabBarLabel: '',
+            tabBarIcon: ({focused}) => (
+              <Image
+                source={
+                  focused
+                    ? require('./src/assets/NotificationF.png')
+                    : require('./src/assets/Notification.png')
+                }
+                style={{
+                  width: '60%',
+                  height: '60%',
+                  resizeMode: 'contain',
+                  marginTop: 20,
+                }}
+              />
+            ),
+          }}
+        /> */}
+         <Tab.Screen
           name="Feed"
           component={ChatScreen}
           options={{

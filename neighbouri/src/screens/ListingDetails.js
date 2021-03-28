@@ -6,15 +6,44 @@ import {
   Image,
 } from 'react-native';
 import RelatedItemsList from '../components/details/RelatedItemsList';
-import {Icon} from 'react-native-elements';
 import SellerInfoCard from '../components/details/SellerInfoCard';
 import Header from '../components/navigation/Header';
 import BackButton from '../components/navigation/BackButton';
 import { TouchableOpacity } from 'react-native';
 import BookmarkButton from '../components/BookmarkButton';
+import MessageIconButton from '../components/MessageIconButton';
+import firestore from '@react-native-firebase/firestore';
+import auth from '@react-native-firebase/auth';
+import { useIsFocused } from "@react-navigation/native";
 
-export default function ListingDetailsScreen({route, navigation}) {
-  const item = route.params;
+export default function ListingDetailsScreen(props) {
+  const item = props.route.params;
+  const navigation = props.navigation;
+  const [userBookmarks, setUserBookmarks] = useState([]);
+  const [userDocumentId, setUserDocumentId] = useState('');
+  const currentUser = auth().currentUser;
+  const currentUserId = currentUser.uid;
+  const isFocused = useIsFocused();
+
+  useEffect(() => {
+    getCurrentUser();
+  }, [props, isFocused]);
+
+  async function getCurrentUser() {
+    await firestore()
+      .collection('Users')
+      .where('uid', '==', currentUserId)
+      .get()
+      .then((userDocs) => {
+        setUserDocumentId(userDocs.docs[0].id);
+        const bookmarks =
+          userDocs.docs[0].data() && userDocs.docs[0].data().bookmarks;
+        setUserBookmarks(bookmarks);
+      })
+      .catch((e) => {
+        console.log('There was an error getting user: ', e);
+      });
+  }
 
   return (
     <View style={{flex: 1, backgroundColor: 'white'}}>
@@ -38,28 +67,13 @@ export default function ListingDetailsScreen({route, navigation}) {
               marginRight: 20,
               alignSelf: 'center'
             }}>
-            <View
-              style={{
-                backgroundColor: 'white',
-                width: 40,
-                height: 40,
-                borderRadius: 12,
-                justifyContent: 'center',
-                alignSelf: 'center'
-              }}>
-              <Icon
-                name="shopping-cart"
-                type="font-awesome"
-                color="#48CA36"
-                onPress={() => console.log('navigate.navigate to cart page')}
-              />
-            </View>
+            <MessageIconButton navigation={navigation}/>
           </View>,
         )}
         <View
           style={{
             backgroundColor: 'white',
-            marginTop: 180,
+            marginTop: 165,
             minHeight: 200,
             width: '100%',
             borderRadius: 20,
@@ -86,12 +100,16 @@ export default function ListingDetailsScreen({route, navigation}) {
                 flex: 4,
                 fontSize: 25,
                 color: 'black',
-                textAlign: 'center'
+                textAlign: 'center',
               }}>
               ABOUT ITEM
             </Text>
             <View style={{flex: 1}} >
-            <BookmarkButton itemID={item.ListingID} />
+            <BookmarkButton
+              itemID={item.ListingID}
+              bookmarks={userBookmarks}
+              userDocumentId={userDocumentId}
+              />
             </View>
           </View>
           <View
@@ -140,9 +158,18 @@ export default function ListingDetailsScreen({route, navigation}) {
               justifyContent: 'center',
             }}>
             <TouchableOpacity
-              onPress={() => {
-                console.log('add to cart');
-              }}
+               onPress={() => {
+              // No Cart For Now
+              // navigation.navigate('Checkout', {
+              //   item: item,
+              //   currentUserId: currentUserId,
+              // });
+              navigation.navigate('CardFormScreen', {
+                item: item,
+                currentUserId: currentUserId,
+                navigation,
+              });
+            }}
               style={{
                 flex: 1,
                 alignItems: 'center',
@@ -151,7 +178,7 @@ export default function ListingDetailsScreen({route, navigation}) {
                 width: 200
                 }}
             >
-              <Text style={{color: 'white', margin: 10, fontSize: 22}}>ADD TO CART</Text>
+              <Text style={{color: 'white', margin: 10, fontSize: 22}}>CHECKOUT</Text>
             </TouchableOpacity>
           </View>
         <View
@@ -175,6 +202,8 @@ export default function ListingDetailsScreen({route, navigation}) {
             currentItemId={item.ListingID}
             currentItemTitle={item.Item}
             navigation={navigation}
+            userBookmarks={userBookmarks}
+            userDocumentId={userDocumentId}
           />
         </View>
       </ScrollView>
