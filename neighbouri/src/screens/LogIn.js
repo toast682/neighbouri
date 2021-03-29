@@ -9,6 +9,7 @@ import {
   Button,
 } from 'react-native';
 import auth from '@react-native-firebase/auth';
+import { Image } from 'react-native';
 
 async function logIn(email, password, setErrorMessage) {
   if (!email) {
@@ -39,15 +40,22 @@ export default function LoginScreen({navigation}) {
     <View style={styles.container}>
       <View
         style={{
-          backgroundColor: 'green',
-          width: 100,
-          height: 100,
+          width: '100%',
+          height: 130,
           alignSelf: 'center',
-          marginTop: 100,
-          borderRadius: 100,
-        }}></View>
-      <Text style={styles.titleText}>Login</Text>
-
+          marginTop: 50,
+        }}>
+          <Image style={{width: '100%', height: '100%', resizeMode: 'contain'}} source={require('../assets/Logo.png')}/>
+        </View>
+        <View
+        style={{
+          width: '130%',
+          height: 150,
+          alignSelf: 'center',
+          marginBottom: 20
+        }}>
+          <Image style={{width: '100%', height: '100%', resizeMode: 'cover'}} source={require('../assets/Illustration.png')}/>
+        </View>
       <TextInput
         placeholder="Email"
         placeholderTextColor="gray"
@@ -65,7 +73,7 @@ export default function LoginScreen({navigation}) {
       <View style={styles.signUpButton}>
         <Button
           title="LOGIN"
-          color={Platform.OS === "android" ? '#48ca36' : 'white'}
+          color={Platform.OS === "android" ? '#538b61' : 'white'}
           onPress={() => {
             logIn(email, password, setErrorMessage);
           }}
@@ -92,7 +100,7 @@ export default function LoginScreen({navigation}) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#ffffff',
+    backgroundColor: '#FFF0CA',
     alignItems: 'center',
     paddingHorizontal: '10%',
   },
@@ -106,7 +114,7 @@ const styles = StyleSheet.create({
   signUpButton: {
     marginTop: 25,
     width: '100%',
-    backgroundColor: '#48ca36',
+    backgroundColor: '#538b61',
     borderRadius: 8,
   },
   errorMessage: {
@@ -119,7 +127,7 @@ const styles = StyleSheet.create({
     marginTop: 30,
   },
   createAccountLinkText: {
-    color: '#3dafe0',
+    color: 'black',
     fontSize: 15,
     height: 50,
   },
@@ -131,5 +139,6 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginTop: 10,
     paddingLeft: 5,
+    backgroundColor: 'white'
   },
 });

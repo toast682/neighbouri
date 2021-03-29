@@ -20,11 +20,11 @@ export default function SavedScreen(props) {
   const navigation = props.navigation;
 
   useEffect(() => {
+    setListings([]);
     getCurrentUser();
   }, [props, isFocused]);
 
   async function getCurrentUser() {
-    setListings([]);
     const currentUser = auth().currentUser;
     const currentUserId = currentUser.uid;
     await firestore()
@@ -36,18 +36,18 @@ export default function SavedScreen(props) {
         const bookmarks =
           userDocs.docs[0].data() && userDocs.docs[0].data().bookmarks;
         setUserBookmarks(bookmarks);
-        getData();
+        getData(bookmarks);
       })
       .catch((e) => {
         console.log('There was an error getting user: ', e);
       });
   }
 
-  async function getData() {
-    if (userBookmarks.length > 0) {
+  async function getData(bookmarks) {
+    if (bookmarks.length > 0) {
         await firestore()
         .collection('Listings')
-        .where('ListingID', 'in', userBookmarks)
+        .where('ListingID', 'in', bookmarks)
         .get()
         .then((listingDocs) => {
           listingDocs.forEach((doc) => {
@@ -58,9 +58,13 @@ export default function SavedScreen(props) {
   }
 
   async function buildObject(doc) {
+    console.log('building')
     const reference = await storage().ref(doc.data().ImageURI).getDownloadURL();
     doc.data().photo = {uri: reference};
-    setListings((prev) => [...prev, doc.data()]);
+    console.log(listings)
+    if (!listings.some((item) => item.ListingID === doc.data().ListingID)) {
+      setListings((prev) => [...prev, doc.data()]);
+    }
   }
 
   return (
@@ -77,7 +81,7 @@ export default function SavedScreen(props) {
                 margin: 10,
                 flexDirection: 'row-reverse'
               }}>
-              <MessageIconButton navigation={navigation}/>
+              {/* <MessageIconButton navigation={navigation}/> */}
             </View>
             <Text style={{
                 color: '#48CA36',
@@ -115,7 +119,8 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#ffffff',
     alignItems: 'center',
-    width: '100%'
+    width: '100%',
+    paddingTop: 30
   },
   title: {
     color: '#48CA36',

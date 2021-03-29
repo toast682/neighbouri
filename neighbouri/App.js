@@ -2,7 +2,7 @@ import 'react-native-gesture-handler';
 import React, {useState, useEffect} from 'react';
 import {Text, View, Platform, Image} from 'react-native';
 import {enableScreens} from 'react-native-screens';
-import {NavigationContainer} from '@react-navigation/native';
+import {DefaultTheme, NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import auth from '@react-native-firebase/auth';
@@ -19,6 +19,7 @@ import CreatePostingScreen from './src/screens/CreatePosting';
 import ListingDetailsScreen from './src/screens/ListingDetails';
 import CardFormScreen from './src/screens/CardFormScreen';
 import Checkout from './src/screens/Checkout';
+import ThankYou from './src/screens/ThankYou';
 
 enableScreens();
 
@@ -38,6 +39,7 @@ function Home() {
       />
       <HomeStack.Screen name="Checkout" component={Checkout} />
       <HomeStack.Screen name="CardFormScreen" component={CardFormScreen} />
+      <HomeStack.Screen name="ThankYou" component={ThankYou} />
     </HomeStack.Navigator>
   );
 }
@@ -134,7 +136,14 @@ export default function App() {
 
   return (
     <NavigationContainer>
-      <Tab.Navigator>
+      <Tab.Navigator
+      tabBarOptions={{
+        activeBackgroundColor: '#FFF0CA',
+        inactiveBackgroundColor: '#FFF0CA',
+        style: {
+          backgroundColor: '#FFF0CA'
+        }
+      }}>
         <Tab.Screen
           name="Home"
           component={Home}
@@ -220,7 +229,6 @@ export default function App() {
             ),
           }}
         />
-        <Tab.Screen name="Payment" component={CardFormScreen} />
         <Tab.Screen
           name="Profile"
           component={Profile}
