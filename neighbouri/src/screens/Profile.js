@@ -84,8 +84,7 @@ export default function ProfileScreen({navigation}) {
     setPurchases([]);
     await firestore()
       .collection('Transactions')
-      .where('BuyerID', '==', auth().currentUser.uid)
-      .orderBy('Date', 'desc')
+      .where('customerId', '==', auth().currentUser.uid)
       .get()
       .then((purchaseDocs) => {
         purchaseDocs.forEach((doc) => {
@@ -101,7 +100,7 @@ export default function ProfileScreen({navigation}) {
   }
 
   async function buildPurchase(doc) {
-    const reference = await storage().ref(doc.data().ImageURI).getDownloadURL();
+    const reference = await storage().ref(doc.data().item.ImageURI).getDownloadURL();
     doc.data().photo = {uri: reference};
     setPurchases((prev) => [...prev, doc.data()]);
   }
@@ -284,9 +283,9 @@ export default function ProfileScreen({navigation}) {
                     }}/>
                 </View>
                 <View>
-                  <Text style={{fontWeight: 'bold'}}>{item.Item} - ${item.Price}</Text>
-                  <Text>{item.SellerName}</Text>
-                  <TouchableOpacity onPress={() => {rateSeller(item.SellerID)}}>
+                  <Text style={{fontWeight: 'bold'}}>{item.item.Item} - ${item.item.Price}</Text>
+                  <Text>{item.item.Name}</Text>
+                  <TouchableOpacity onPress={() => {rateSeller(item.item.SellerID)}}>
                   <Text style={{color: '#F9A528', textDecorationLine: 'underline'}}>Review Seller</Text>
                   </TouchableOpacity>
                 </View>
