@@ -10,7 +10,6 @@ import ItemTile from '../components/ItemTile'
 import storage from '@react-native-firebase/storage';
 import auth from '@react-native-firebase/auth';
 import { useIsFocused } from "@react-navigation/native";
-import MessageIconButton from '../components/MessageIconButton';
 
 export default function SavedScreen(props) {
   const [listings, setListings] = useState([]);
