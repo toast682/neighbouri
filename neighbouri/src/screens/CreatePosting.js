@@ -9,6 +9,8 @@ import {
   Modal,
   Image,
   ScrollView,
+  Platform,
+  PermissionsAndroid
 } from 'react-native';
 import firestore from '@react-native-firebase/firestore';
 import {launchCamera} from 'react-native-image-picker';
@@ -17,11 +19,16 @@ import {TextInput} from 'react-native-gesture-handler';
 import storage from '@react-native-firebase/storage';
 import NumericInput from 'react-native-numeric-input';
 import DatePicker from 'react-native-date-picker';
+import geohash from 'ngeohash';
+import Geolocation from 'react-native-geolocation-service';
 import DropDownPicker from 'react-native-dropdown-picker';
+import {useIsFocused} from '@react-navigation/native';
+import auth from '@react-native-firebase/auth';
 
 const listingsCollection = firestore().collection('Listings');
 
-export default function CreatePostingScreen({navigation}) {
+export default function CreatePostingScreen(props) {
+  const {navigation} = props;
   const [photo, setPhoto] = useState(null);
   const [description, setDescription] = useState('');
   const [photoURI, setPhotoURI] = useState('');
@@ -34,6 +41,72 @@ export default function CreatePostingScreen({navigation}) {
   const [pickupLocation, setPickupLocation] = useState('');
   const [pickupTime, setPickupTime] = useState('');
   const [category, setCategory] = useState('');
+  const [location, setLocation] = useState('');
+  const [userDocument, setUserDocument] = useState();
+  const isFocused = useIsFocused();
+
+  useEffect(() => {
+    getLocation();
+    getCurrentUser();
+  }, [props, isFocused]);
+
+  async function getLocation() {
+    if (Platform.OS === 'android') {
+      try {
+        const granted = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+          {
+            title: 'Neighbouri Location Permission',
+            message:
+              'Neighbouri needs access to your location ' +
+              'to connect you with others around you!',
+            buttonNeutral: 'Ask Me Later',
+            buttonNegative: 'Cancel',
+            buttonPositive: 'OK',
+          },
+        );
+        if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+          Geolocation.getCurrentPosition(
+            (position) => {
+              console.log(position.coords.latitude, position.coords.longitude);
+              // Comment line below for faked location
+              // setLoc(geohash.encode(position.coords.latitude, position.coords.longitude, 6));
+              setLocation(
+                geohash.encode(
+                  position.coords.latitude,
+                  position.coords.longitude,
+                  6,
+                ),
+              );
+            },
+            (err) => {
+              console.error(err);
+            },
+            {enableHighAccuracy: true, maximumAge: 0},
+          );
+        } else {
+          alert('Permission Denied');
+        }
+      } catch (err) {
+        console.warn(err);
+      }
+    } else {
+      Geolocation.requestAuthorization('always').then(() => {
+        Geolocation.getCurrentPosition(
+          (info) => {
+          // Comment out line below for faked location
+          // setLoc(geohash.encode(info.coords.latitude, info.coords.longitude, 6));
+          setLocation(
+            geohash.encode(info.coords.latitude, info.coords.longitude, 6),
+          );
+        },
+        (err) => {
+          console.log(err)
+        },
+        { enableHighAccuracy: true, timeout: 150000, maximumAge: 10000});
+      });
+    }
+  }
 
   const takePhoto = () => {
     const options = {
@@ -60,21 +133,12 @@ export default function CreatePostingScreen({navigation}) {
     const task = storage().ref(filename).putFile(uri);
     try {
       await task;
-    } catch (e) {
-      console.error(e);
-    }
-  };
-
-  async function submitPosting() {
-    try {
-      uploadImage();
-      listingsCollection.add({
+      await listingsCollection.add({
         Active: true,
         Address: 'User Address',
-        ListingID: '000000000',
-        Name: 'User name',
+        Name: userDocument.Username,
         PostedDate: new Date(),
-        SellerID: '0000000',
+        SellerID: auth().currentUser.uid,
         Suite: '1234',
         ImageURI: `${
           photoURI
@@ -90,8 +154,34 @@ export default function CreatePostingScreen({navigation}) {
         ExpiryDate: {Day:date.getDate(),Month:date.getMonth() + 1,Year:date.getFullYear()},
         PickupLocation: `${pickupLocation ? pickupLocation : ''}`,
         PickupTime: `${pickupTime ? pickupTime : ''}`,
+        Location: location
+      }).then((res) => {
+        res.update({
+          ListingID: res.id
+        })
       });
       navigation.navigate('Home');
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  async function getCurrentUser() {
+    await firestore()
+      .collection('Users')
+      .where('uid', '==', auth().currentUser.uid)
+      .get()
+      .then((userDocs) => {
+        setUserDocument(userDocs.docs[0].data());
+      })
+      .catch((e) => {
+        console.log('There was an error getting user: ', e);
+      });
+  }
+
+  async function submitPosting() {
+    try {
+      uploadImage();
     } catch (err) {
       console.log(err);
     }
@@ -106,13 +196,11 @@ export default function CreatePostingScreen({navigation}) {
           <Image
             source={require('../assets/placeholderimage.jpg')}
             style={styles.image}
-            resizeMode='contain'
           />
         ) : (
           <Image
             source={{ uri: photo.uri }}
             style={styles.image}
-            resizeMode='contain'
           />
         )}
 
@@ -241,7 +329,7 @@ const styles = StyleSheet.create({
   title: {
     color: '#48CA36',
     fontSize: 30,
-    marginTop: 30,
+    marginTop: 50,
     marginBottom: 20,
     textAlign:'center',
   },
@@ -259,13 +347,13 @@ const styles = StyleSheet.create({
   },
 
   button: {
+    width: '25%',
     backgroundColor: "#48CA36",
     borderRadius: 20,
-    paddingVertical: 7,
-    paddingHorizontal: 7,
-    marginLeft:270,
-    marginRight: 50,
-
+    padding: 7,
+    marginHorizontal: '9%',
+    alignSelf: 'flex-end',
+    marginBottom: 300,
   },
 
   buttonText: {
@@ -308,15 +396,19 @@ const styles = StyleSheet.create({
   },
 
   imageContainer: {
-    margin: 119,
-    marginVertical: 10,
-    marginLeft:120,
+    width: '50%',
+    alignSelf: 'center',
+    justifyContent: 'center',
+    alignItems: 'center',
     borderWidth: 1,
     borderColor: '#000000',
+    borderRadius: 8,
   },
 
   image: {
-    width: 170,
+    width: '100%',
+    borderRadius: 8,
     height: 170,
+    resizeMode: 'cover'
   },
 });

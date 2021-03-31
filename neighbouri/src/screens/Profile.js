@@ -249,7 +249,7 @@ export default function ProfileScreen({navigation}) {
         
         <HFlatList
           index={1}
-          data={purchases}
+          data={purchases.sort((a, b) => b.created - a.created)}
           tabLabel={'Purchases'}
           renderItem={({item}) => (
             <View

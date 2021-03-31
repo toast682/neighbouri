@@ -31,13 +31,12 @@ export default function ThankYou({route, navigation}) {
 
   return (
     <View style={{justifyContent: 'center', alignItems: 'center', paddingTop: 50}}>
-      <View style={{width: 300, height: 300, borderRadius: 300}}>
+      <View style={{width: 400, height: 300}}>
         <Image
           style={{
             width: '100%',
             height: '100%',
-            borderRadius: 200,
-            resizeMode: 'center',
+            resizeMode: 'cover'
           }}
           source={require('../assets/Celebrate.png')}
         />
