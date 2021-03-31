@@ -31,6 +31,20 @@ export default class CardFormScreen extends PureComponent {
       navigation: this.props.route.params.navigation,
     };
   }
+
+  updatePosting = async () => {
+      await firestore()
+        .collection('Listings')
+        .where('ListingID', '==', this.state.item.ListingID)
+        .get()
+        .then((userDocs) => {
+          userDocs.docs[0].ref.update({Active:false});
+        })
+        .catch((e) => {
+          console.log('There was an error getting user: ', e);
+        });
+    }
+
   makePayment = async () => {
     this.setState({loading: true});
     axios({
@@ -44,6 +58,7 @@ export default class CardFormScreen extends PureComponent {
       },
     }).then((res) => {
       this.setState({loading: false, disabled: true});
+      this.updatePosting();
       usersCollection
         .add(this.state.paymentMethod)
         .then(() => {
@@ -69,6 +84,7 @@ export default class CardFormScreen extends PureComponent {
       paymentMethod.billingDetails.address.postalCode = this.state.postalCode;
       paymentMethod.customerId = this.props.route.params.currentUserId;
       paymentMethod.item = this.state.item;
+      paymentMethod.Date = new Date();
       this.setState({loading: false, paymentMethod});
     } catch (error) {
       this.setState({loading: false});

@@ -110,6 +110,7 @@ export default function HomeScreen(props) {
     await firestore()
       .collection('Listings')
       .where('Location', '==', loc)
+      .where('Active', '==', true)
       .orderBy('PostedDate', 'desc')
       .get()
       .then((listingDocs) => {
@@ -125,6 +126,7 @@ export default function HomeScreen(props) {
     await firestore()
       .collection('Listings')
       .where('Category', 'in', f)
+      .where('Active', '==', true)
       .where('Location', '==', loc)
       .orderBy('PostedDate', 'desc')
       .get()

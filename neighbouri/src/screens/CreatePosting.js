@@ -69,10 +69,11 @@ export default function CreatePostingScreen({navigation}) {
     try {
       uploadImage();
       listingsCollection.add({
+        Active: true,
         Address: 'User Address',
         ListingID: '000000000',
         Name: 'User name',
-        PostedDate: new Date().toDateString(),
+        PostedDate: new Date(),
         SellerID: '0000000',
         Suite: '1234',
         ImageURI: `${
