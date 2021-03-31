@@ -1,52 +1,39 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, {useState, useCallback, useEffect} from 'react';
 import {GiftedChat} from 'react-native-gifted-chat';
 import firestore, {firebase} from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
+import {useNavigation} from '@react-navigation/native';
 
 const chat = firestore().collection('Chats');
 
-export default function ChatScreen() {
+export default function ChatScreen({route, navigation}) {
+  // const [currentDocID, setCurrentDocID] = useState(route.params.docID);
+  // const docID = route.params.docID;
+  // console.log('docID', docID);
+  // console.log('route', route);
   const [messages, setMessages] = useState([]);
   const [userChatState, setUserChatState] = useState(null);
   const currentUserId = auth().currentUser.uid;
   const currentUser = auth().currentUser;
 
   useEffect(() => {
-    getPreviousMessages();
-  }, [getPreviousMessages, messages]);
+    if (route.params.docID) {
+      getPreviousMessages(route.params.docID);
+    }
+  });
 
-  // Esteban Codes Message
-  //   const unsubscribe = chat.onSnapshot((querySnapshot) => {
-  //     const messagesFirestore = querySnapshot
-  //       .docChanges()
-  //       .filter(({type}) => type === 'added')
-  //       .map(({doc}) => {
-  //         const message = doc.data();
-  //         return {...message, createdAt: message.createdAt.toDate()};
-  //       })
-  //       .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
-  //     appendMessages(messagesFirestore);
-  //   });
-  //   return () => unsubscribe();
-  // }, []);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  async function getPreviousMessages() {
-    const userChat = await chat
-      .where('chatMembers', 'array-contains', currentUserId)
-      .get();
+  async function getPreviousMessages(id) {
+    const docID = id;
+    const userChat = await chat.doc(docID).get();
+
     userChat._docs[0]._data.messages.map(
       (message) => (message.createdAt = message.createdAt.toDate()),
     );
     setMessages(userChat._docs[0]._data.messages);
-    setUserChatState(chat.doc('375GBe05aRCeeTyaPkSy'));
-    // console.log(userChat.docs[0].id);
-    return Promise.resolve();
-    // console.log(currentUserId);
+    setUserChatState(chat.doc(docID));
   }
   const handleSend = async (message) => {
-    // userChatState.update({
-    //   messages: admin.firestore.FieldValue.arrayUnion(message),
-    // });
     userChatState
       .update({
         messages: firebase.firestore.FieldValue.arrayUnion(...message),
@@ -81,14 +68,6 @@ export default function ChatScreen() {
     <GiftedChat
       messages={messages}
       onSend={async (message) => {
-        // const userChat = await chat
-        //   .where('chatMembers', 'array-contains', currentUserId)
-        //   .get();
-        // const userChatMessages = userChat._docs[0]._data.messages;
-        // userChatMessages.add(messages[0]);
-        // console.log(messages);
-        // console.log(userChat);
-        // console.log(userChatMessages);
         await handleSend(message);
       }}
       user={{

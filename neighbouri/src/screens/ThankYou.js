@@ -7,16 +7,17 @@ import {TouchableOpacity} from 'react-native-gesture-handler';
 import {Image} from 'react-native';
 import auth from '@react-native-firebase/auth';
 
-const chat = firestore().collection('Chats');
 export default function ThankYou({route, navigation}) {
   const {item} = route.params;
   const currentUserId = auth().currentUser.uid;
   const currentSellerId = item.SellerID;
   const [sellerName, setSellerName] = useState();
+  const chat = firestore().collection('Chats');
+
   function createChat() {
-    chat.add({
-      User1: currentUserId,
-      User2: currentSellerId,
+    const newChat = chat.doc();
+    newChat.set({
+      chatMembers: [currentUserId, currentSellerId],
       messages: [
         {
           _id: Math.random() * 100000,
@@ -29,6 +30,11 @@ export default function ThankYou({route, navigation}) {
           },
         },
       ],
+    });
+    const id = newChat.id;
+    console.log(id);
+    navigation.navigate('ChatScreen', {
+      docID: id,
     });
   }
 
@@ -101,7 +107,7 @@ export default function ThankYou({route, navigation}) {
           }}
           title="Thank you for your purchase!"
           onPress={() => {
-            createChat(route.params.SellerID);
+            createChat();
           }}
         />
       </TouchableOpacity>
