@@ -20,6 +20,7 @@ import ListingDetailsScreen from './src/screens/ListingDetails';
 import CardFormScreen from './src/screens/CardFormScreen';
 import Checkout from './src/screens/Checkout';
 import ThankYou from './src/screens/ThankYou';
+import ChatsListScreen from './src/screens/Chats';
 
 enableScreens();
 
@@ -36,6 +37,10 @@ function Home() {
       <HomeStack.Screen
         name="ListingDetails"
         component={ListingDetailsScreen}
+      />
+      <HomeStack.Screen
+        name="ChatsList"
+        component={ChatsListScreen}
       />
       <HomeStack.Screen name="Checkout" component={Checkout} />
       <HomeStack.Screen name="CardFormScreen" component={CardFormScreen} />
@@ -72,11 +77,16 @@ function CreateScreen() {
   );
 }
 
+const ChatStack = createNativeStackNavigator();
 function FeedScreen() {
   return (
-    <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-      <Text>Feed!</Text>
-    </View>
+    <ChatStack.Navigator
+      initialRouteName="ChatsList"
+      screenOptions={{
+        headerShown: false,
+      }}>
+      <ChatStack.Screen name="ChatsList" component={ChatsListScreen} />
+    </ChatStack.Navigator>
   );
 }
 

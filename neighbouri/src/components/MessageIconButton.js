@@ -20,7 +20,7 @@ export default function MessageIconButton(props) {
                 name="commenting-o"
                 type="font-awesome"
                 color="#6C6767"
-                onPress={() => console.log('navigation.navigate to messaging page')}
+                onPress={() => console.log(navigation.navigate('ChatsList'))}
             />
         </View>
     );
