@@ -17,6 +17,7 @@ import Saved from './src/screens/Saved';
 import ProfileInfoScreen from './src/screens/ProfileInfo';
 import CreatePostingScreen from './src/screens/CreatePosting';
 import ListingDetailsScreen from './src/screens/ListingDetails';
+import ChatScreen from './src/screens/ChatScreen';
 import CardFormScreen from './src/screens/CardFormScreen';
 import Checkout from './src/screens/Checkout';
 import ThankYou from './src/screens/ThankYou';
@@ -198,7 +199,6 @@ export default function App() {
             ),
           }}
         />
-
         <Tab.Screen
           name="Create"
           component={CreateScreen}
@@ -217,9 +217,31 @@ export default function App() {
             ),
           }}
         />
-        <Tab.Screen
+        {/* <Tab.Screen
           name="Feed"
           component={FeedScreen}
+          options={{
+            tabBarLabel: '',
+            tabBarIcon: ({focused}) => (
+              <Image
+                source={
+                  focused
+                    ? require('./src/assets/NotificationF.png')
+                    : require('./src/assets/Notification.png')
+                }
+                style={{
+                  width: '60%',
+                  height: '60%',
+                  resizeMode: 'contain',
+                  marginTop: 20,
+                }}
+              />
+            ),
+          }}
+        /> */}
+         <Tab.Screen
+          name="Feed"
+          component={ChatScreen}
           options={{
             tabBarLabel: '',
             tabBarIcon: ({focused}) => (

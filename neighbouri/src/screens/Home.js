@@ -14,9 +14,9 @@ import {TextInput} from 'react-native-gesture-handler';
 import ItemTile from '../components/ItemTile';
 import storage from '@react-native-firebase/storage';
 import geohash from 'ngeohash';
-import Geolocation from '@react-native-community/geolocation';
+import Geolocation from 'react-native-geolocation-service';
 import auth from '@react-native-firebase/auth';
-import { useIsFocused } from "@react-navigation/native";
+import {useIsFocused} from '@react-navigation/native';
 
 export default function HomeScreen(props) {
   const {navigation} = props;
@@ -143,7 +143,7 @@ export default function HomeScreen(props) {
     setFullListings((prev) => [...prev, doc.data()]);
     setListings((prev) => [...prev, doc.data()]);
   }
-  
+
   //TODO: make adding a posting require having a name, description, etc.
   function searchList(keyword) {
     setSearch(keyword);
@@ -269,7 +269,7 @@ export default function HomeScreen(props) {
             navigation={navigation}
             bookmarks={userBookmarks}
             userDocumentId={userDocumentId}
-            />
+          />
         )}
         keyExtractor={(item, index) => index.toString()}
         numColumns={2}
