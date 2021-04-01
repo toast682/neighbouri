@@ -46,6 +46,7 @@ function Home() {
       <HomeStack.Screen name="Checkout" component={Checkout} />
       <HomeStack.Screen name="CardFormScreen" component={CardFormScreen} />
       <HomeStack.Screen name="ThankYou" component={ThankYou} />
+      <HomeStack.Screen name="ChatScreen" component={ChatScreen} />
     </HomeStack.Navigator>
   );
 }
@@ -144,7 +145,6 @@ export default function App() {
       </NavigationContainer>
     );
   }
-
   return (
     <NavigationContainer>
       <Tab.Navigator

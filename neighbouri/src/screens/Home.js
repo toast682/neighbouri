@@ -35,6 +35,7 @@ export default function HomeScreen(props) {
     getLocation();
     getCurrentUser();
     getData();
+    console.log(currentUserId);
   }, [props, isFocused]);
 
   async function getCurrentUser() {

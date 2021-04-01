@@ -5,14 +5,42 @@ import {Button} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import {Image} from 'react-native';
-import {floor} from 'react-native-reanimated';
+import auth from '@react-native-firebase/auth';
 
 export default function ThankYou({route, navigation}) {
   const {item} = route.params;
+  const currentUserId = auth().currentUser.uid;
+  const currentSellerId = item.SellerID;
   const [sellerName, setSellerName] = useState();
+  const chat = firestore().collection('Chats');
+
+  function createChat() {
+    const newChat = chat.doc();
+    newChat.set({
+      chatMembers: [currentUserId, currentSellerId],
+      messages: [
+        {
+          _id: Math.random() * 100000,
+          createdAt: new Date(),
+          text: 'I just bought your item!',
+          user: {
+            _id: currentUserId,
+            name: auth().currentUser.displayName,
+            avatar: auth().currentUser.photoURL,
+          },
+        },
+      ],
+    });
+    const id = newChat.id;
+    console.log(id);
+    navigation.navigate('ChatScreen', {
+      docID: id,
+    });
+  }
 
   useEffect(() => {
     console.log(item.SellerID);
+    console.log();
     firestore()
       .collection('Users')
       .doc(item.SellerID)
@@ -52,8 +80,8 @@ export default function ThankYou({route, navigation}) {
           fontSize: 18,
         }}>
         You can chat with the seller
-        <Text style={{fontWeight: 'bold'}}> {sellerName} </Text>to arrange pickup
-        time and location!
+        <Text style={{fontWeight: 'bold'}}> {sellerName} </Text>to arrange
+        pickup time and location!
       </Text>
       <TouchableOpacity
         style={{
@@ -68,15 +96,18 @@ export default function ThankYou({route, navigation}) {
           navigation.popToTop();
           navigation.navigate('Feed');
         }}>
-        <Text
+        <Button
           style={{
             color: 'white',
             fontSize: 18,
             paddingHorizontal: 40,
             paddingVertical: 10,
-          }}>
-          CHAT
-        </Text>
+          }}
+          title="Thank you for your purchase!"
+          onPress={() => {
+            createChat();
+          }}
+        />
       </TouchableOpacity>
     </View>
   );
