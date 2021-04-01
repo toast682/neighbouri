@@ -41,7 +41,7 @@ export default function CreatePostingScreen(props) {
   const [pickupLocation, setPickupLocation] = useState('');
   const [pickupTime, setPickupTime] = useState('');
   const [category, setCategory] = useState('');
-  const [location, setLocation] = useState('');
+  const [location, setLocation] = useState('c2b2q7');
   const [userDocument, setUserDocument] = useState();
   const isFocused = useIsFocused();
 
