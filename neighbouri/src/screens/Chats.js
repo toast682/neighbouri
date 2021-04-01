@@ -53,13 +53,9 @@ export default function ChatsListScreen(props) {
     const lastMessengerIds = latestChatMessages.map(msg => msg.user._id);
     const lastMessengerIdSet = new Set(lastMessengerIds);
     if (lastMessengerIds.length > 0) {
-      /* TODO some user._id's seem to be uid's and some seem to be user document ids???
-        use .where('uid', 'in', [...lastMessengerIdSet]) instead of .doc when the
-        id thing is sorted out
-      */
         await firestore()
         .collection('Users')
-        .doc(lastMessengerIds[0])
+        .where('uid', 'in', [...lastMessengerIdSet])
         .get()
         .then((userDocs) => {
             userDocs.forEach((doc) => {
