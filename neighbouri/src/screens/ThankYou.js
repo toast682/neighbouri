@@ -12,35 +12,36 @@ export default function ThankYou({route, navigation}) {
   const currentUserId = auth().currentUser.uid;
   const currentSellerId = item.SellerID;
   const [sellerName, setSellerName] = useState();
-  const chat = firestore().collection('Chats');
 
-  function createChat() {
-    const newChat = chat.doc();
-    newChat.set({
-      chatMembers: [currentUserId, currentSellerId],
-      messages: [
-        {
-          _id: Math.random() * 100000,
-          createdAt: new Date(),
-          text: 'I just bought your item!',
-          user: {
-            _id: currentUserId,
-            name: auth().currentUser.displayName,
-            avatar: auth().currentUser.photoURL,
+  async function createChat() {
+    await navigation.popToTop();
+    await firestore()
+      .collection('Chats')
+      .add({
+        chatMembers: [currentUserId, currentSellerId],
+        messages: [
+          {
+            _id: Math.random() * 100000,
+            createdAt: new Date(),
+            text: 'Testing',
+            user: {
+              _id: currentUserId,
+              name: auth().currentUser.displayName,
+              avatar: auth().currentUser.photoURL,
+            },
           },
-        },
-      ],
-    });
-    const id = newChat.id;
-    console.log('id', id);
-    navigation.navigate('ChatScreen', {
-      docID: id,
-    });
+        ],
+      })
+      .then((res) => {
+        const id = res.id;
+        console.log('id', id);
+        navigation.push('ChatScreen', {
+          docID: id,
+        });
+      });
   }
 
   useEffect(() => {
-    console.log(item.SellerID);
-    console.log();
     firestore()
       .collection('Users')
       .doc(item.SellerID)
@@ -58,13 +59,14 @@ export default function ThankYou({route, navigation}) {
   }, []);
 
   return (
-    <View style={{justifyContent: 'center', alignItems: 'center', paddingTop: 50}}>
+    <View
+      style={{justifyContent: 'center', alignItems: 'center', paddingTop: 50}}>
       <View style={{width: 400, height: 300}}>
         <Image
           style={{
             width: '100%',
             height: '100%',
-            resizeMode: 'cover'
+            resizeMode: 'cover',
           }}
           source={require('../assets/Celebrate.png')}
         />
@@ -93,21 +95,17 @@ export default function ThankYou({route, navigation}) {
           justifyContent: 'center',
         }}
         onPress={() => {
-          navigation.popToTop();
-          navigation.navigate('Feed');
+          createChat();
         }}>
-        <Button
+        <Text
           style={{
             color: 'white',
             fontSize: 18,
             paddingHorizontal: 40,
             paddingVertical: 10,
-          }}
-          title="Thank you for your purchase!"
-          onPress={() => {
-            createChat();
-          }}
-        />
+          }}>
+          CHAT
+        </Text>
       </TouchableOpacity>
     </View>
   );

@@ -8,8 +8,6 @@ import {useNavigation} from '@react-navigation/native';
 const chat = firestore().collection('Chats');
 
 export default function ChatScreen({route, navigation}) {
-  const docID = route.params.docID;
-  console.log('docID', docID);
   console.log('route', route);
   const [messages, setMessages] = useState([]);
   const [userChatState, setUserChatState] = useState(null);
@@ -17,16 +15,20 @@ export default function ChatScreen({route, navigation}) {
   const currentUser = auth().currentUser;
 
   useEffect(() => {
-    getPreviousMessages();
+    getPreviousMessages(route.params.docID);
   }, []);
 
-  async function getPreviousMessages() {
-    const userChat = await chat.doc().get();
-    userChat._docs[0]._data.messages.map(
-      (message) => (message.createdAt = message.createdAt.toDate()),
+  async function getPreviousMessages(docID) {
+    const userChat = await chat.doc(docID).get();
+    const messages = userChat.data().messages.map(
+      (message) => {
+        const mes = message
+        mes.createdAt = message.createdAt.toDate()
+        return mes
+      },
     );
-    setMessages(userChat._docs[0]._data.messages);
-    setUserChatState(userChat);
+    setMessages(messages);
+    setUserChatState(userChat.ref);
   }
   const handleSend = async (message) => {
     userChatState

@@ -39,10 +39,7 @@ function Home() {
         name="ListingDetails"
         component={ListingDetailsScreen}
       />
-      <HomeStack.Screen
-        name="ChatsList"
-        component={ChatsListScreen}
-      />
+      <HomeStack.Screen name="ChatsList" component={ChatsListScreen} />
       <HomeStack.Screen name="Checkout" component={Checkout} />
       <HomeStack.Screen name="CardFormScreen" component={CardFormScreen} />
       <HomeStack.Screen name="ThankYou" component={ThankYou} />
@@ -55,15 +52,22 @@ const SavedStack = createStackNavigator();
 
 function SavedScreen() {
   return (
-        <SavedStack.Navigator
-          initialRouteName='Saved'
-          screenOptions={{
-            headerShown: false,
-          }}
-        >
-          <SavedStack.Screen name='Saved' component={Saved} />
-          <SavedStack.Screen name='ListingDetails' component={ListingDetailsScreen} />
-        </SavedStack.Navigator>
+    <SavedStack.Navigator
+      initialRouteName="Saved"
+      screenOptions={{
+        headerShown: false,
+      }}>
+      <SavedStack.Screen name="Saved" component={Saved} />
+      <SavedStack.Screen
+        name="ListingDetails"
+        component={ListingDetailsScreen}
+      />
+      <SavedStack.Screen name="ChatsList" component={ChatsListScreen} />
+      <SavedStack.Screen name="Checkout" component={Checkout} />
+      <SavedStack.Screen name="CardFormScreen" component={CardFormScreen} />
+      <SavedStack.Screen name="ThankYou" component={ThankYou} />
+      <SavedStack.Screen name="ChatScreen" component={ChatScreen} />
+    </SavedStack.Navigator>
   );
 }
 
@@ -88,6 +92,7 @@ function FeedScreen() {
         headerShown: false,
       }}>
       <ChatStack.Screen name="ChatsList" component={ChatsListScreen} />
+      <ChatStack.Screen name="ChatScreen" component={ChatScreen} />
     </ChatStack.Navigator>
   );
 }
@@ -148,13 +153,13 @@ export default function App() {
   return (
     <NavigationContainer>
       <Tab.Navigator
-      tabBarOptions={{
-        activeBackgroundColor: '#FFF0CA',
-        inactiveBackgroundColor: '#FFF0CA',
-        style: {
-          backgroundColor: '#FFF0CA'
-        }
-      }}>
+        tabBarOptions={{
+          activeBackgroundColor: '#FFF0CA',
+          inactiveBackgroundColor: '#FFF0CA',
+          style: {
+            backgroundColor: '#FFF0CA',
+          },
+        }}>
         <Tab.Screen
           name="Home"
           component={Home}
@@ -217,31 +222,9 @@ export default function App() {
             ),
           }}
         />
-        {/* <Tab.Screen
+        <Tab.Screen
           name="Feed"
           component={FeedScreen}
-          options={{
-            tabBarLabel: '',
-            tabBarIcon: ({focused}) => (
-              <Image
-                source={
-                  focused
-                    ? require('./src/assets/NotificationF.png')
-                    : require('./src/assets/Notification.png')
-                }
-                style={{
-                  width: '60%',
-                  height: '60%',
-                  resizeMode: 'contain',
-                  marginTop: 20,
-                }}
-              />
-            ),
-          }}
-        /> */}
-         <Tab.Screen
-          name="Feed"
-          component={ChatScreen}
           options={{
             tabBarLabel: '',
             tabBarIcon: ({focused}) => (
