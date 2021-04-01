@@ -45,7 +45,8 @@ export default function SellerInfoCard(sellerID) {
                     setSellerRating(sellerData.SellerRating[1]);
                     setSellerNumberOfRatings(sellerData.SellerRating[0]);
                 }
-                storage().ref(sellerData.IconURI).getDownloadURL().then((reference => {
+                storage().ref('ProfilePicture')
+                .child(sellerID.SellerID + '.JPG').getDownloadURL().then((reference => {
                     setAvatarURI(reference);
                 }));
               }
@@ -88,7 +89,6 @@ export default function SellerInfoCard(sellerID) {
                         minHeight: 70
                         }}>
                         <Text>{seller && seller.Username}</Text>
-                        <Text>{seller && seller.Email}</Text>
                         <View style={{
                             flex: 1,
                             alignItems: 'center',
@@ -103,7 +103,7 @@ export default function SellerInfoCard(sellerID) {
                             size={15}
                         />
                         </View>
-                        <Text>{seller && seller.email}</Text>
+                        <Text style={{fontSize: 10}}>{seller && seller.email}</Text>
                         </View>
                     </View>
                     <View style={{

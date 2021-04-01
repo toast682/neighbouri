@@ -187,7 +187,7 @@ export default function ListingDetailsScreen(props) {
             marginLeft: 10,
             marginTop: 10,
           }}>
-          <Text style={{fontSize: 16}}>Seller Info</Text>
+          <Text style={{fontSize: 16, fontWeight: 'bold'}}>Seller Info</Text>
         </View>
         <SellerInfoCard SellerID={item.SellerID} />
         <View
@@ -197,7 +197,7 @@ export default function ListingDetailsScreen(props) {
             borderRadius: 8,
             padding: 5,
           }}>
-          <Text style={{fontSize: 16, marginBottom: 10}}>Products related to this item</Text>
+          <Text style={{fontSize: 16, marginBottom: 10, fontWeight: 'bold'}}>Products related to this item</Text>
           <RelatedItemsList
             currentItemId={item.ListingID}
             currentItemTitle={item.Item}

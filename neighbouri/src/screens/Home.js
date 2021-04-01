@@ -73,7 +73,7 @@ export default function HomeScreen(props) {
           Geolocation.getCurrentPosition(
             (position) => {
               console.log(position.coords.latitude, position.coords.longitude);
-              // Comment line below for faked location
+              // Comment out line below for faked location
               // setLoc(geohash.encode(position.coords.latitude, position.coords.longitude, 6));
               console.log(
                 geohash.encode(
@@ -95,12 +95,19 @@ export default function HomeScreen(props) {
         console.warn(err);
       }
     } else {
-      Geolocation.getCurrentPosition((info) => {
-        // Comment line below for faked location
-        // setLoc(geohash.encode(info.coords.latitude, info.coords.longitude, 6));
-        console.log(
-          geohash.encode(info.coords.latitude, info.coords.longitude, 6),
-        );
+      Geolocation.requestAuthorization('always').then(() => {
+        Geolocation.getCurrentPosition(
+          (info) => {
+          // Comment out line below for faked location
+          // setLoc(geohash.encode(info.coords.latitude, info.coords.longitude, 6));
+          console.log(
+            geohash.encode(info.coords.latitude, info.coords.longitude, 6),
+          );
+        },
+        (err) => {
+          console.log(err)
+        },
+        { enableHighAccuracy: true, timeout: 150000, maximumAge: 10000});
       });
     }
   }
@@ -111,6 +118,7 @@ export default function HomeScreen(props) {
     await firestore()
       .collection('Listings')
       .where('Location', '==', loc)
+      .where('Active', '==', true)
       .orderBy('PostedDate', 'desc')
       .get()
       .then((listingDocs) => {
@@ -126,6 +134,7 @@ export default function HomeScreen(props) {
     await firestore()
       .collection('Listings')
       .where('Category', 'in', f)
+      .where('Active', '==', true)
       .where('Location', '==', loc)
       .orderBy('PostedDate', 'desc')
       .get()

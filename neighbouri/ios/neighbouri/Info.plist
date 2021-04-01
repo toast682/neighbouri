@@ -57,6 +57,10 @@
 	<false/>
 	<key>NSLocationAlwaysUsageDescription</key>
 	<string>Location for finding items</string>
+	<key>NSCameraUsageDescription</key>
+	<string>For listing items</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>For listing items</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>Entypo.ttf</string>
