@@ -67,7 +67,7 @@ export default function ListingDetailsScreen(props) {
               marginRight: 20,
               alignSelf: 'center'
             }}>
-            <MessageIconButton navigation={navigation}/>
+            {/* <MessageIconButton navigation={navigation}/> */}
           </View>,
         )}
         <View

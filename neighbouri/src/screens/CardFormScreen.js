@@ -38,7 +38,7 @@ export default class CardFormScreen extends PureComponent {
         .where('ListingID', '==', this.state.item.ListingID)
         .get()
         .then((userDocs) => {
-          // userDocs.docs[0].ref.update({Active:false});
+          userDocs.docs[0].ref.update({Active:false});
         })
         .catch((e) => {
           console.log('There was an error getting user: ', e);

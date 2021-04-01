@@ -31,6 +31,7 @@ export default function ChatsListScreen(props) {
     messages with the proper uids instead of fetching all messages in the db */
     await firestore()
       .collection('Chats')
+      .where('chatMembers', 'array-contains', auth().currentUser.uid)
       .get()
       .then((chatDocs) => {
         const chats = chatDocs.docs.map((d) => {

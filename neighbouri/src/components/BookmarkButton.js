@@ -58,15 +58,14 @@ export default function BookmarkButton(props) {
                 width: 40,
                 height: 40,
                 borderRadius: 12,
-                borderWidth: 2,
-                borderColor: '#F9A528',
+                backgroundColor: '#98959550',
                 justifyContent: 'center',
                 alignSelf: 'center'
             }}>
                 <Icon
                     name="bookmark"
                     type="font-awesome"
-                    color="#B96F00"
+                    color="#F9A528"
                     onPress={() => removeFromBookmarks()}
                 />
             </View>
@@ -75,15 +74,14 @@ export default function BookmarkButton(props) {
                 width: 40,
                 height: 40,
                 borderRadius: 12,
-                borderWidth: 2,
-                borderColor: '#F9A528',
+                backgroundColor: '#98959550',
                 justifyContent: 'center',
                 alignSelf: 'center'
             }}>
                 <Icon
                 name="bookmark-o"
                 type="font-awesome"
-                color="#F9A528"
+                color="white"
                 onPress={() => addToBookmarks()}
                 />
             </View>

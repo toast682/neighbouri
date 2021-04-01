@@ -23,7 +23,7 @@ export default function ThankYou({route, navigation}) {
           {
             _id: Math.random() * 100000,
             createdAt: new Date(),
-            text: 'Testing',
+            text: auth().currentUser.displayName + " purchased " + item.Item,
             user: {
               _id: currentUserId,
               name: auth().currentUser.displayName,

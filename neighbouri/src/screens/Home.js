@@ -177,6 +177,7 @@ export default function HomeScreen(props) {
         data={[...new Set(listings)]}
         ListHeaderComponent={
           <View>
+            <Image style={{width: '45%', height:70, resizeMode: 'cover', marginTop: 30,}} source={require('../assets/Logo.png')}/>
             <Text style={styles.title}>What your neighbours are selling</Text>
             <TextInput
               style={{
@@ -299,7 +300,6 @@ const styles = StyleSheet.create({
   title: {
     color: 'black',
     fontSize: 24,
-    marginTop: 70,
     width: '80%',
     alignSelf: 'flex-start',
   },
