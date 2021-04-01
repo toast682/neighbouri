@@ -32,7 +32,7 @@ export default function ThankYou({route, navigation}) {
       ],
     });
     const id = newChat.id;
-    console.log(id);
+    console.log('id', id);
     navigation.navigate('ChatScreen', {
       docID: id,
     });

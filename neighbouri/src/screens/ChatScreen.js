@@ -8,30 +8,25 @@ import {useNavigation} from '@react-navigation/native';
 const chat = firestore().collection('Chats');
 
 export default function ChatScreen({route, navigation}) {
-  // const [currentDocID, setCurrentDocID] = useState(route.params.docID);
-  // const docID = route.params.docID;
-  // console.log('docID', docID);
-  // console.log('route', route);
+  const docID = route.params.docID;
+  console.log('docID', docID);
+  console.log('route', route);
   const [messages, setMessages] = useState([]);
   const [userChatState, setUserChatState] = useState(null);
   const currentUserId = auth().currentUser.uid;
   const currentUser = auth().currentUser;
 
   useEffect(() => {
-    if (route.params.docID) {
-      getPreviousMessages(route.params.docID);
-    }
-  });
+    getPreviousMessages();
+  }, []);
 
-  async function getPreviousMessages(id) {
-    const docID = id;
-    const userChat = await chat.doc(docID).get();
-
+  async function getPreviousMessages() {
+    const userChat = await chat.doc().get();
     userChat._docs[0]._data.messages.map(
       (message) => (message.createdAt = message.createdAt.toDate()),
     );
     setMessages(userChat._docs[0]._data.messages);
-    setUserChatState(chat.doc(docID));
+    setUserChatState(userChat);
   }
   const handleSend = async (message) => {
     userChatState
@@ -40,24 +35,6 @@ export default function ChatScreen({route, navigation}) {
       })
       .then(onSend(message));
   };
-
-  //   useEffect(() => {
-  //     readUser()
-  //     const unsubscribe = chatsRef.onSnapshot((querySnapshot) => {
-  //         const messagesFirestore = querySnapshot
-  //             .docChanges()
-  //             .filter(({ type }) => type === 'added')
-  //             .map(({ doc }) => {
-  //                 const message = doc.data()
-  //                 //createdAt is firebase.firestore.Timestamp instance
-  //                 //https://firebase.google.com/docs/reference/js/firebase.firestore.Timestamp
-  //                 return { ...message, createdAt: message.createdAt.toDate() }
-  //             })
-  //             .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
-  //         appendMessages(messagesFirestore)
-  //     })
-  //     return () => unsubscribe()
-  // }, [])
 
   const onSend = useCallback((messages = []) => {
     setMessages((previousMessages) =>
