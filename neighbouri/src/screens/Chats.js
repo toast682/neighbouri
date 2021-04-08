@@ -112,7 +112,7 @@ export default function ChatsListScreen(props) {
     }
     const monthDayOrNow = isNow ? 'now' : monthDay;
     const dateTimeString =
-      hourMin[0] + ':' + hourMin[1] + ' PM ' + '(' + monthDayOrNow + ')';
+      hourMin[0] + ':' + hourMin[1] + '(' + monthDayOrNow + ')';
     return dateTimeString;
   }
 

@@ -165,9 +165,10 @@ export default class CardFormScreen extends PureComponent {
           style={{
             alignItems: 'center',
             borderRadius: 25,
-            backgroundColor: '#48CA36',
+            backgroundColor: 'white',
+            borderColor: '#48CA36',
             width: '90%',
-            borderWidth: 0,
+            borderWidth: 1,
             marginTop: 30,
           }}
           onPress={this.handleCardPayPress}
@@ -175,7 +176,7 @@ export default class CardFormScreen extends PureComponent {
         />
         <View
           style={{
-            marginTop: 25,
+            marginTop: 50,
             width: '90%',
             backgroundColor: '#48CA36',
             borderRadius: 25,

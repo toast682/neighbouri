@@ -152,9 +152,9 @@ export default function CreatePostingScreen(props) {
         Category: `${category ? category : ''}`,
         Condition: `${condition ? condition : ''}`,
         ExpiryDate: {Day:date.getDate(),Month:date.getMonth() + 1,Year:date.getFullYear()},
-        PickupLocation: `${pickupLocation ? pickupLocation : ''}`,
+        PickupLocation: `${pickupLocation ? pickupLocation : 'c2b2q7'}`,
         PickupTime: `${pickupTime ? pickupTime : ''}`,
-        Location: location
+        Location: 'c2b2q7'
       }).then((res) => {
         res.update({
           ListingID: res.id
@@ -352,7 +352,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     padding: 7,
     marginHorizontal: '9%',
-    alignSelf: 'flex-end',
+    alignSelf: 'center',
     marginBottom: 300,
   },
 
