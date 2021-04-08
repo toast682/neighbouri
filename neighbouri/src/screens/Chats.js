@@ -26,7 +26,7 @@ export default function ChatsListScreen(props) {
   async function getUserChats() {
     const currentUser = auth().currentUser;
     const currentUserId = currentUser.uid;
-    /* todo - make more efficient: maybe give each message a uid 
+    /* todo - make more efficient: maybe give each message a uid
     and store message uid in an array in each user document. Then I can query for the
     messages with the proper uids instead of fetching all messages in the db */
     await firestore()
@@ -35,7 +35,7 @@ export default function ChatsListScreen(props) {
       .get()
       .then((chatDocs) => {
         const chats = chatDocs.docs.map((d) => {
-          const doc = d.data()
+          const doc = d.data();
           doc.docID = d.id;
           return doc;
         });
@@ -43,7 +43,7 @@ export default function ChatsListScreen(props) {
           return ch.chatMembers.includes(currentUserId);
         });
         const latestMsgs = userchts.map((ch) => {
-          const doc = ch.messages.pop()
+          const doc = ch.messages.pop();
           doc.docID = ch.docID;
           return doc;
         });
@@ -157,7 +157,7 @@ export default function ChatsListScreen(props) {
           return (
             <TouchableOpacity
               onPress={() => {
-                console.log(item)
+                console.log(item);
                 navigation.push('ChatScreen', {
                   docID: item.docID,
                 });
@@ -176,7 +176,7 @@ export default function ChatsListScreen(props) {
                 }}>
                 <View style={{flexDirection: 'row'}}>
                   <View style={{flex: 1, minHeight: 70}}>
-                    {!!item.user.avatar ? (
+                    {item.user.avatar ? (
                       <Image
                         source={{uri: item.user.avatar}}
                         style={{
