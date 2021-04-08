@@ -31,6 +31,7 @@ export default function ChatScreen({route, navigation}) {
     });
 
     setMessages(sortedMessages);
+    setUserChatState(userChat.ref);
   }
   const handleSend = async (message) => {
     userChatState
@@ -40,9 +41,9 @@ export default function ChatScreen({route, navigation}) {
       .then(onSend(message));
   };
 
-  const onSend = useCallback((messages = []) => {
+  const onSend = useCallback((message = []) => {
     setMessages((previousMessages) =>
-      GiftedChat.append(previousMessages, messages),
+      GiftedChat.append(previousMessages, message),
     );
   }, []);
   return (
