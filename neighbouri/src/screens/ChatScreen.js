@@ -20,15 +20,17 @@ export default function ChatScreen({route, navigation}) {
 
   async function getPreviousMessages(docID) {
     const userChat = await chat.doc(docID).get();
-    const messages = userChat.data().messages.map(
-      (message) => {
-        const mes = message
-        mes.createdAt = message.createdAt.toDate()
-        return mes
-      },
-    );
-    setMessages(messages);
-    setUserChatState(userChat.ref);
+    const msgs = userChat.data().messages.map((message) => {
+      const mes = message;
+      mes.createdAt = message.createdAt.toDate();
+      return mes;
+    });
+
+    const sortedMessages = msgs.sort((a, b) => {
+      return b.createdAt - a.createdAt;
+    });
+
+    setMessages(sortedMessages);
   }
   const handleSend = async (message) => {
     userChatState
@@ -38,7 +40,7 @@ export default function ChatScreen({route, navigation}) {
       .then(onSend(message));
   };
 
-  const onSend = useCallback((messages = []) => {
+  const onSend = useCallback((message = []) => {
     setMessages((previousMessages) =>
       GiftedChat.append(previousMessages, messages),
     );
